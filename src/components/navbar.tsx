@@ -3,9 +3,11 @@ import { MaxWidthWrapper } from "./max-width-wrapper";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "./ui/button";
 import { NavbarActionsButton } from "./navbar-action-button";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
-export const Navbar = () => {
-  const user = false;
+export const Navbar = async () => {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
 
   return (
     <nav className="sticky z-50 h-16 inset-x-0 top-0 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition">
@@ -40,7 +42,7 @@ export const Navbar = () => {
                   Login
                 </Link>
                 <Link
-                  href="/register"
+                  href="/api/auth/register"
                   className={cn(buttonVariants({ variant: "ghost" }))}
                 >
                   Sing up
