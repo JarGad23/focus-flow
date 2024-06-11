@@ -27,7 +27,10 @@ export const LoginModal = ({ isOpen, setIsOpen }: Props) => {
             Login to continue
           </p>
           <DialogDescription className="text-base text-center py-2 space-y-1">
-            <p>Please login or create an account to complete your purchase.</p>
+            <p>
+              Please login or create an account to start planning your day for
+              free.
+            </p>
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-6 divide-x divide-gray-200">
