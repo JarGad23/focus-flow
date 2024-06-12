@@ -3,6 +3,7 @@ import { Roboto } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { QueryProvider } from "@/components/query-provider";
+import { cn } from "@/lib/utils";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -21,12 +22,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={roboto.className}>
-        <Navbar />
-        <main className="grainy-light flex flex-col min-h-[calc(100vh-64px)]">
-          <div className="flex-1 flex flex-col h-full">
-            <QueryProvider>{children}</QueryProvider>
-          </div>
+      <body
+        className={cn(
+          "w-full min-w-[375px] overflow-x-hidden",
+          roboto.className
+        )}
+      >
+        <main className="h-full grainy-light">
+          <QueryProvider>{children}</QueryProvider>
         </main>
       </body>
     </html>

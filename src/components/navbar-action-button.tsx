@@ -10,7 +10,7 @@ type Props = {
   isUser: boolean;
 };
 
-export const NavbarActionsButton = ({ isUser }: Props) => {
+export const NavbarActionButton = ({ isUser }: Props) => {
   const router = useRouter();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
@@ -25,7 +25,7 @@ export const NavbarActionsButton = ({ isUser }: Props) => {
   return (
     <>
       <LoginModal isOpen={isLoginModalOpen} setIsOpen={setIsLoginModalOpen} />
-      <Button onClick={onClick}>
+      <Button onClick={onClick} size="sm" variant="outline">
         Start planning <NotebookPen className="h-4 w-4 ml-2" />
       </Button>
     </>
