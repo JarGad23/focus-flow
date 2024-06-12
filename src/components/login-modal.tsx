@@ -8,6 +8,7 @@ import {
 } from "./ui/dialog";
 import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs";
 import { buttonVariants } from "./ui/button";
+import { Logo } from "./logo";
 
 type Props = {
   isOpen: boolean;
@@ -20,8 +21,7 @@ export const LoginModal = ({ isOpen, setIsOpen }: Props) => {
       <DialogContent className="absolute z-[9999]">
         <DialogHeader>
           <DialogTitle className="mx-auto mb-4 text-4xl font-bold">
-            <span className="text-primary">F</span>ocus
-            <span className="text-primary">F</span>low
+            <Logo />
           </DialogTitle>
           <p className="text-xl text-center tracking-tight text-gray-900">
             Login to continue

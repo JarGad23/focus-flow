@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MaxWidthWrapper } from "./max-width-wrapper";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { NavbarLinks } from "./navbar-links";
+import { Logo } from "./logo";
 
 export const Navbar = async () => {
   const { getUser } = getKindeServerSession();
@@ -12,8 +13,7 @@ export const Navbar = async () => {
       <MaxWidthWrapper>
         <div className="w-full max-w-7xl h-full flex items-center justify-between">
           <Link href="/" className="text-lg sm:text-xl">
-            <span className="font-semibold text-primary">F</span>ocus
-            <span className="font-semibold text-primary">F</span>low
+            <Logo />
           </Link>
           <NavbarLinks isUser={!!user} />
         </div>
