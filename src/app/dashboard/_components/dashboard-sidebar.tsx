@@ -8,7 +8,7 @@ export const DashboardSidebar = () => {
   return (
     <div
       className={cn(
-        "block h-full w-40 md:w-60 border-r border-gray-200",
+        "block w-40 md:w-60 border-r border-gray-200",
         !isOpen && "hidden"
       )}
     >
