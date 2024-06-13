@@ -28,7 +28,7 @@ export default function RootLayout({
           roboto.className
         )}
       >
-        <main className="h-full grainy-light">
+        <main className="h-auto grainy-light">
           <QueryProvider>{children}</QueryProvider>
         </main>
       </body>

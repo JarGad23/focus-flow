@@ -1,3 +1,4 @@
+import { Calendar } from "@/components/calendar";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
 
@@ -9,7 +10,7 @@ const DashboardPage = async () => {
     return redirect("/");
   }
 
-  return <div>Dashboard page</div>;
+  return <Calendar />;
 };
 
 export default DashboardPage;
