@@ -22,13 +22,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={cn(
-          "w-full min-w-[375px] overflow-x-hidden",
-          roboto.className
-        )}
-      >
-        <main className="h-auto grainy-light">
+      <body className={cn("w-full min-w-[375px]", roboto.className)}>
+        <main className="min-h-screen h-auto grainy-light">
           <QueryProvider>{children}</QueryProvider>
         </main>
       </body>

@@ -3,11 +3,11 @@ import { DashboardSidebar } from "./_components/dashboard-sidebar";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="relative w-full h-full flex flex-col">
+    <div className="relative w-full min-h-screen flex flex-col">
       <DashboardNavbar />
-      <div className="h-full flex">
+      <div className="flex flex-1 overflow-y-auto">
         <DashboardSidebar />
-        <div className="h-auto w-full flex-1">{children}</div>
+        <div className="w-full flex-1 overflow-y-auto">{children}</div>
       </div>
     </div>
   );
