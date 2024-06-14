@@ -20,7 +20,7 @@ export const NavbarInfo = () => {
   };
 
   return (
-    <div className="flex items-center gap-x-4">
+    <div className="flex items-center gap-x-2 lg:gap-x-4">
       <Button variant="ghost" onClick={handleSidebarOpen}>
         {isOpen ? (
           <PanelLeftClose className="h-5 w-5" />
