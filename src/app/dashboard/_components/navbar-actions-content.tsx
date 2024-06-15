@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { useSelectedDate } from "@/store/useSelectedDate";
 import {
   timeFormatType,
   timePeriodType,
@@ -24,13 +25,27 @@ type Props = {
 export const NavbarActionsContent = ({ isPro, className }: Props) => {
   const { onTimeFormatChange, timeFormat, timePeriod, onTimePeriodChange } =
     useTimePeriod();
+  const { onSelectDay, onSelectMonth, onSelectWeek } = useSelectedDate();
+
+  const handleTimePeriodChange = (value: timePeriodType) => {
+    onTimePeriodChange(value);
+    const currentDate = new Date();
+    switch (value) {
+      case "DAY":
+        onSelectDay(currentDate);
+        break;
+      case "WEEK":
+        onSelectWeek(currentDate);
+        break;
+      case "MONTH":
+        onSelectMonth(currentDate.getMonth());
+        break;
+    }
+  };
 
   return (
     <div className={cn("w-full flex items-center gap-x-2", className)}>
-      <Select
-        value={timePeriod}
-        onValueChange={(value: timePeriodType) => onTimePeriodChange(value)}
-      >
+      <Select value={timePeriod} onValueChange={handleTimePeriodChange}>
         <SelectTrigger className="w-full md:w-[100px] focus:ring-offset-0 focus:ring-transparent outline-none">
           <SelectValue placeholder="Time Period" />
         </SelectTrigger>

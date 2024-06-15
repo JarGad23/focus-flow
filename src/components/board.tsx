@@ -5,7 +5,7 @@ import { DayView } from "./day-view";
 import { WeekView } from "./week-view";
 import { MonthView } from "./month-view";
 
-export const Calendar = () => {
+export const Board = () => {
   const { timePeriod } = useTimePeriod();
 
   const renderView = () => {
