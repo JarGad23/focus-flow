@@ -1,56 +1,25 @@
 "use client";
 
-import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useSelectedDate } from "@/store/useSelectedDate";
 import { useSidebar } from "@/store/useSidebar";
 import { useTimePeriod } from "@/store/useTimePeriod";
-import { format, startOfWeek, getMonth } from "date-fns";
-import "react-day-picker/dist/style.css";
+import { SidebarCalendar } from "./sidebar-calendar";
+import { format } from "date-fns";
 
 export const DashboardSidebar = () => {
   const { isOpen } = useSidebar();
-  const { day, week, month, onSelectDay, onSelectWeek, onSelectMonth } =
-    useSelectedDate();
+  const { day, week, month, year } = useSelectedDate();
   const { timePeriod } = useTimePeriod();
-
-  const handleSelect = (selected: Date | undefined) => {
-    if (selected) {
-      switch (timePeriod) {
-        case "DAY":
-          onSelectDay(selected);
-          break;
-        case "WEEK":
-          onSelectWeek(startOfWeek(selected, { weekStartsOn: 1 }));
-          break;
-        case "MONTH":
-          onSelectMonth(getMonth(selected));
-          break;
-      }
-    }
-  };
-
-  const modifiers = {
-    selectedDay: day ? [day] : [],
-    selectedWeek: week ? [{ from: week[0], to: week[1] }] : [],
-    selectedMonth:
-      month !== undefined ? [new Date(new Date().getFullYear(), month)] : [],
-  };
 
   return (
     <div
       className={cn(
-        "block w-40 md:w-60 border-r border-gray-200",
+        "w-40 md:w-60 border-r border-gray-200 bg-neutral-50 flex flex-col items-center px-4 py-6",
         !isOpen && "hidden"
       )}
     >
-      <Calendar
-        mode="single"
-        selected={timePeriod === "DAY" ? day : undefined}
-        onSelect={handleSelect}
-        modifiers={modifiers}
-        showOutsideDays
-      />
+      <SidebarCalendar />
       <div className="p-4">
         {timePeriod === "DAY" && day && (
           <div>Selected day: {format(day, "MMMM do, yyyy")}</div>
@@ -63,8 +32,7 @@ export const DashboardSidebar = () => {
         )}
         {timePeriod === "MONTH" && month !== undefined && (
           <div>
-            Selected month:{" "}
-            {format(new Date(new Date().getFullYear(), month), "MMMM, yyyy")}
+            Selected month: {format(new Date(year, month), "MMMM yyyy")}
           </div>
         )}
       </div>

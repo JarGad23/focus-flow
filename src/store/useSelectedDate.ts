@@ -1,14 +1,16 @@
 import { create } from "zustand";
-import { startOfWeek, endOfWeek, format } from "date-fns";
+import { startOfWeek, endOfWeek, format, getMonth, getYear } from "date-fns";
 
 type selectedDateStoreType = {
-  day: Date | undefined;
+  day: Date;
   week: [Date, Date];
   month: number;
   monthName: string;
+  year: number;
   onSelectDay: (day: Date) => void;
   onSelectWeek: (weekStart: Date) => void;
   onSelectMonth: (month: number) => void;
+  onSelectYear: (year: number) => void;
 };
 
 export const useSelectedDate = create<selectedDateStoreType>((set) => ({
@@ -17,14 +19,15 @@ export const useSelectedDate = create<selectedDateStoreType>((set) => ({
     startOfWeek(new Date(), { weekStartsOn: 1 }),
     endOfWeek(new Date(), { weekStartsOn: 1 }),
   ],
-  month: new Date().getMonth(),
+  month: getMonth(new Date()),
+  year: getYear(new Date()),
   monthName: format(new Date(), "MMMM"),
   onSelectDay: (day: Date) => set({ day }),
-  onSelectWeek: (weekStart: Date) =>
+  onSelectWeek: (date: Date) =>
     set({
       week: [
-        startOfWeek(weekStart, { weekStartsOn: 1 }),
-        endOfWeek(weekStart, { weekStartsOn: 1 }),
+        startOfWeek(date, { weekStartsOn: 1 }),
+        endOfWeek(date, { weekStartsOn: 1 }),
       ],
     }),
   onSelectMonth: (month: number) => {
@@ -35,4 +38,5 @@ export const useSelectedDate = create<selectedDateStoreType>((set) => ({
       monthName: format(newDate, "MMMM"),
     });
   },
+  onSelectYear: (year: number) => set({ year }),
 }));
