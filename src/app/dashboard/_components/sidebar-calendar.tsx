@@ -15,8 +15,7 @@ import { useTimePeriod } from "@/store/useTimePeriod";
 import { MonthSelector } from "@/components/month-selector";
 
 export const SidebarCalendar = () => {
-  const { day, onSelectDay, week, onSelectWeek, month, onSelectMonth } =
-    useSelectedDate();
+  const { day, onSelectDay, week, onSelectWeek, month } = useSelectedDate();
   const { timePeriod } = useTimePeriod();
 
   const daysOfWeek = eachDayOfInterval({
@@ -60,7 +59,7 @@ export const SidebarCalendar = () => {
                 <>
                   {week ? (
                     <span className="truncate">
-                      {format(week[0], "LLL dd, y")} -{" "}
+                      {format(week[0], "LLL dd")} -{" "}
                       {format(week[1], "LLL dd, y")}
                     </span>
                   ) : (

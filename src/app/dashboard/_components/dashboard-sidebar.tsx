@@ -34,7 +34,7 @@ export const DashboardSidebar = () => {
           <h4>
             Selected week:{" "}
             <span className="font-semibold text-md text-primary">
-              {format(week[0], "LLL dd, y")} - {format(week[1], "LLL dd, y")}
+              {format(week[0], "LLL dd")} - {format(week[1], "LLL dd, y")}
             </span>
           </h4>
         )}
