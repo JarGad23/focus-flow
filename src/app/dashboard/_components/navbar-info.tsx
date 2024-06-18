@@ -6,9 +6,11 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { format } from "date-fns";
 import { useSidebar } from "@/store/useSidebar";
 import { Button } from "@/components/ui/button";
+import { useSelectedDate } from "@/store/useSelectedDate";
 
 export const NavbarInfo = () => {
   const { timePeriod } = useTimePeriod();
+  const { day, week, month, year } = useSelectedDate();
   const { isOpen, onClose, onOpen } = useSidebar();
 
   const handleSidebarOpen = () => {
@@ -29,10 +31,21 @@ export const NavbarInfo = () => {
         )}
       </Button>
       <Logo />
-      <span className="text-lg font-medium tracking-tight">
-        {timePeriod === "DAY"
-          ? format(new Date(), "dd MMM yyyy")
-          : format(new Date(), "MMMM yyyy")}
+      <span className="lg:text-lg font-medium tracking-tight">
+        {timePeriod === "DAY" ? (
+          format(day, "dd MMM yyyy")
+        ) : timePeriod === "WEEK" ? (
+          <>
+            <span className="lg:hidden">
+              {format(week[0], "LLL dd")} - {format(week[1], "LLL dd")}
+            </span>
+            <span className="hidden lg:block">
+              {format(week[0], "LLL dd")} - {format(week[1], "LLL dd, y")}
+            </span>
+          </>
+        ) : (
+          format(new Date(year, month), "MMMM yyyy")
+        )}
       </span>
     </div>
   );
