@@ -8,7 +8,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { eachDayOfInterval, format, getMonth, setMonth } from "date-fns";
+import { eachDayOfInterval, format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useSelectedDate } from "@/store/useSelectedDate";
 import { useTimePeriod } from "@/store/useTimePeriod";
@@ -37,11 +37,6 @@ export const SidebarCalendar = () => {
     onSelectWeek(selectedDay);
   };
 
-  const handleMonthSelect = (month: Date) => {
-    const selectedMonth = getMonth(month);
-    onSelectMonth(selectedMonth);
-  };
-
   return (
     <>
       {timePeriod === "MONTH" ? (
@@ -50,14 +45,29 @@ export const SidebarCalendar = () => {
         <Popover>
           <PopoverTrigger asChild>
             <Button
-              variant={"outline"}
+              variant="outline"
               className={cn(
                 "w-full justify-start text-left font-normal",
                 !day && "text-muted-foreground"
               )}
             >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {day ? format(day, "PPP") : <span>Pick a date</span>}
+              <CalendarIcon className="flex-shrink-0 mr-2 size-3 md:size-4" />
+              {timePeriod === "DAY" ? (
+                <span className="truncate">
+                  {day ? format(day, "PPP") : <span>Pick a date</span>}
+                </span>
+              ) : (
+                <>
+                  {week ? (
+                    <span className="truncate">
+                      {format(week[0], "LLL dd, y")} -{" "}
+                      {format(week[1], "LLL dd, y")}
+                    </span>
+                  ) : (
+                    <span>Pick a date</span>
+                  )}
+                </>
+              )}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" sideOffset={10} align="start">

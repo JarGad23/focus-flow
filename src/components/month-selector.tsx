@@ -52,9 +52,9 @@ export const MonthSelector = () => {
 
   return (
     <Popover>
-      <PopoverTrigger>
+      <PopoverTrigger className="w-full">
         <Button
-          variant={"outline"}
+          variant="outline"
           className={cn(
             "w-full justify-start text-left font-normal",
             !yearAndMonth && "text-muted-foreground"
