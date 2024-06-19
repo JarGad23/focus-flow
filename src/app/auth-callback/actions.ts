@@ -20,6 +20,8 @@ export const getAuthStatus = async () => {
       data: {
         id: user.id,
         email: user.email,
+        userImg: "/user-fallback.png",
+        username: `user_${Math.floor(100000 + Math.random() * 900000)}`,
       },
     });
   }
