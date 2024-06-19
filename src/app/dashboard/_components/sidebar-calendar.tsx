@@ -15,15 +15,13 @@ import { useTimePeriod } from "@/store/useTimePeriod";
 import { MonthSelector } from "@/components/month-selector";
 
 export const SidebarCalendar = () => {
-  const { day, onSelectDay, week, onSelectWeek, month } = useSelectedDate();
+  const { day, onSelectDay, week, onSelectWeek } = useSelectedDate();
   const { timePeriod } = useTimePeriod();
 
   const daysOfWeek = eachDayOfInterval({
     start: week[0],
     end: week[1],
   });
-
-  console.log(month);
 
   const handleDaySelect = (date: Date) => {
     if (timePeriod === "DAY") {

@@ -19,7 +19,7 @@ const AuthCallbackPage = () => {
   }
 
   return (
-    <div className="h-full">
+    <div className="h-screen">
       <div className="h-full flex flex-col items-center justify-center gap-2">
         <Loader2 className="h-8 w-8 animate-spin text-zinc-500" />
         <h3 className="font-semibold text-xl">Logging you in...</h3>
