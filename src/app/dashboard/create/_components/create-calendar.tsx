@@ -24,17 +24,22 @@ export const CreateCalendar = ({ date, setDate }: Props) => {
         {/* TODO: Implement samll screen dropdown calendar and dropdown AI Helper on pro */}
       </div>
       <div className="hidden lg:flex flex-col gap-y-2">
-        <h3>Selected date: {format(date, "dd MMM yyyy")}</h3>
+        <h3 className="text-lg">
+          Selected date:{" "}
+          <span className="text-primary font-semibold">
+            {format(date, "dd MMM yyyy")}
+          </span>
+        </h3>
         <Calendar
           ISOWeek
           mode="single"
           selected={date}
           onSelect={setDate}
-          initialFocus
           captionLayout="dropdown-buttons"
           fromYear={1960}
           toYear={2030}
-          className="bg-neutral-100/50 rounded-lg shadow-lg p-8 w-fit"
+          className="bg-neutral-100/50 rounded-lg shadow-lg p-8 w-fit border"
+          required
         />
       </div>
     </div>
