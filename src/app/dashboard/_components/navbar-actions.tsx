@@ -37,7 +37,7 @@ export const NavbarActions = () => {
       </div>
       <div className="w-full block md:hidden">
         <Sheet>
-          <SheetTrigger>
+          <SheetTrigger asChild>
             <Button variant="ghost">
               <Menu className="w-5 h-5" />
             </Button>

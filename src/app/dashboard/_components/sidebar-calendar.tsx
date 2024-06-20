@@ -81,6 +81,7 @@ export const SidebarCalendar = () => {
               />
             ) : timePeriod === "DAY" ? (
               <Calendar
+                required
                 ISOWeek
                 mode="single"
                 selected={day}
