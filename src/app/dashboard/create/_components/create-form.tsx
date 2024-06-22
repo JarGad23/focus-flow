@@ -1,30 +1,7 @@
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  EventSchema,
-  PriorityEnum,
-  StatusEnum,
-  TaskSchema,
-} from "@/schemas/create-form-schema";
+import { EventSchema, TaskSchema } from "@/schemas/create-form-schema";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { FormProvider, useForm } from "react-hook-form";
+import { ZodSchema, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTimePeriod } from "@/store/useTimePeriod";
 import { useEffect, useState } from "react";
@@ -38,37 +15,51 @@ import {
   parse,
   startOfDay,
 } from "date-fns";
-import { cn, generateTimeBlocks, getNext15MinuteBlock } from "@/lib/utils";
+import { generateTimeBlocks, getNext15MinuteBlock } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { FormTypeSelector } from "./form-type-selector";
+import { FormTimeSelectors } from "./form-time-selectors";
+import { FormPrioritySelector } from "./form-priority-selector";
+import { FormStatusSelector } from "./form-status-selector";
+import { FormTitleDescriptionFields } from "./form-title-description-fields";
+import { FormAllDayCheckbox } from "./form-all-day-checkbox";
 
 type Props = {
   type: string;
   date: Date;
 };
 
+type TaskFormData = z.infer<typeof TaskSchema>;
+type EventFormData = z.infer<typeof EventSchema>;
+type FormData = TaskFormData | EventFormData;
+
 export const CreateForm = ({ type, date }: Props) => {
   const router = useRouter();
   const { timeFormat } = useTimePeriod();
+
+  const [schema, setSchema] = useState<ZodSchema>(TaskSchema);
+
+  useEffect(() => {
+    if (type === "task") {
+      setSchema(TaskSchema);
+    } else if (type === "event") {
+      setSchema(EventSchema);
+    }
+  }, [type]);
 
   const handleTypeValueChange = (value: string) => {
     router.push(`?type=${value}`);
   };
 
-  const schema =
-    type === "task" ? TaskSchema : type === "event" ? EventSchema : null;
-
-  type FormData = z.infer<typeof TaskSchema> | z.infer<typeof EventSchema>;
-
   const form = useForm<FormData>({
-    resolver: schema ? zodResolver(schema) : undefined,
+    resolver: zodResolver(schema),
     defaultValues: {
       day: date,
       month: getMonth(date),
       year: getYear(date),
       priority: "medium",
       status: "incompleted",
-    },
+    } as Partial<FormData>,
   });
 
   const [startDateOptions, setStartDateOptions] = useState<string[]>([]);
@@ -100,6 +91,25 @@ export const CreateForm = ({ type, date }: Props) => {
     }
   }, [date, form, type]);
 
+  useEffect(() => {
+    const resetValues: Partial<FormData> = {
+      day: date,
+      month: getMonth(date),
+      year: getYear(date),
+      title: "",
+      description: "",
+      priority: "medium",
+      status: "incompleted",
+      startTime: undefined,
+      endTime: undefined,
+    };
+
+    if (type === "event") {
+      (resetValues as Partial<EventFormData>).isAllDay = false;
+    }
+    form.reset(resetValues);
+  }, [date, form, type]);
+
   const handleStartDateChange = (value: string) => {
     const dateFormat = "yyyy-MM-dd";
     const timeFormatString = timeFormat === "24H" ? "HH:mm" : "hh:mm a";
@@ -121,7 +131,7 @@ export const CreateForm = ({ type, date }: Props) => {
     form.setValue("startTime", startTime);
   };
 
-  const handlEndDateChange = (value: string) => {
+  const handleEndDateChange = (value: string) => {
     const dateFormat = "yyyy-MM-dd";
     const timeFormatString = timeFormat === "24H" ? "HH:mm" : "hh:mm a";
     const dateTimeFormat = `${dateFormat}${timeFormatString}`;
@@ -140,222 +150,29 @@ export const CreateForm = ({ type, date }: Props) => {
 
   return (
     <div className="w-full max-w-2xl flex flex-col gap-y-6">
-      <div className="flex flex-col gap-y-2">
-        <h3 className="text-xl font-semibold">
-          {type !== "" ? (
-            <>
-              Selected type: <span className="text-primary">{type}</span>
-            </>
-          ) : (
-            <>Select creation type:</>
-          )}
-        </h3>
-        <Select value={type} onValueChange={handleTypeValueChange}>
-          <SelectTrigger className="max-w-80 focus:ring-offset-0 focus:ring-transparent outline-none">
-            <SelectValue placeholder="Task/Event" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="task">Task</SelectItem>
-            <SelectItem value="event">Event</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <FormTypeSelector
+        type={type}
+        handleTypeValueChange={handleTypeValueChange}
+      />
       {type === "task" || type === "event" ? (
-        <Form {...form}>
+        <FormProvider {...form}>
           <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field, fieldState }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Write some code" {...field} />
-                  </FormControl>
-                  <FormMessage>{fieldState.error?.message}</FormMessage>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormDescription>
-                    Describe details about your{" "}
-                    {type === "task" ? "task" : "event"}. This field is optional
-                  </FormDescription>
-                  <FormControl>
-                    <Textarea
-                      className="resize-none"
-                      placeholder="Complete one feature in major functionality in app"
-                      {...field}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+            <FormTitleDescriptionFields type={type} />
             {type === "task" ? (
               <div className="space-y-6">
-                <div className="w-full flex items-center gap-x-4">
-                  <FormField
-                    control={form.control}
-                    name="startTime"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel>Start Time</FormLabel>
-                        <FormControl>
-                          <Select
-                            value={
-                              field.value
-                                ? format(
-                                    field.value,
-                                    timeFormat === "24H" ? "HH:mm" : "hh:mm a"
-                                  )
-                                : ""
-                            }
-                            onValueChange={(value) => {
-                              handleStartDateChange(value);
-                            }}
-                          >
-                            <SelectTrigger className="max-w-80 focus:ring-offset-0 focus:ring-transparent outline-none">
-                              <SelectValue placeholder="Select start time" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {startDateOptions.map((option) => (
-                                <SelectItem key={option} value={option}>
-                                  {option}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="endTime"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel>End Time</FormLabel>
-                        <FormControl>
-                          <Select
-                            value={
-                              field.value
-                                ? format(
-                                    field.value,
-                                    timeFormat === "24H" ? "HH:mm" : "hh:mm a"
-                                  )
-                                : ""
-                            }
-                            onValueChange={(value) => {
-                              handlEndDateChange(value);
-                            }}
-                            disabled={!selectedStartDate}
-                          >
-                            <SelectTrigger className="max-w-80 focus:ring-offset-0 focus:ring-transparent outline-none">
-                              <SelectValue placeholder="Select end time" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {endDateOptions.map((option) => (
-                                <SelectItem key={option} value={option}>
-                                  {option}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <FormField
-                  control={form.control}
-                  name="priority"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Priority</FormLabel>
-                      <FormControl>
-                        <div className="flex items-center gap-x-4 xl:gap-x-8">
-                          <div
-                            className={cn(
-                              "size-8 rounded-sm",
-                              field.value === "low"
-                                ? "bg-green-500"
-                                : field.value === "medium"
-                                ? "bg-orange-400"
-                                : "bg-rose-500"
-                            )}
-                          />
-                          <Select
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          >
-                            <SelectTrigger className="w-full focus:ring-offset-0 focus:ring-transparent outline-none">
-                              <SelectValue placeholder="Select priority" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {PriorityEnum.options.map((option) => (
-                                <SelectItem value={option} key={option}>
-                                  <span className="capitalize">{option}</span>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                  )}
+                <FormTimeSelectors
+                  endDateOptions={endDateOptions}
+                  handleEndDateChange={handleEndDateChange}
+                  handleStartDateChange={handleStartDateChange}
+                  selectedStartDate={selectedStartDate}
+                  startDateOptions={startDateOptions}
+                  timeFormat={timeFormat}
                 />
-                <FormField
-                  control={form.control}
-                  name="status"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Status</FormLabel>
-                      <FormControl>
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
-                          <SelectTrigger className="w-full focus:ring-offset-0 focus:ring-transparent outline-none">
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {StatusEnum.options.map((option) => (
-                              <SelectItem value={option} key={option}>
-                                <span className="capitalize">
-                                  {option === "inProgress"
-                                    ? "In progress"
-                                    : option}
-                                </span>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+                <FormPrioritySelector />
+                <FormStatusSelector />
               </div>
             ) : (
-              <FormField
-                control={form.control}
-                name="isAllDay"
-                render={({ field }) => (
-                  <FormItem className="flex items-end gap-x-2">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormLabel>Will this event take whole day ?</FormLabel>
-                  </FormItem>
-                )}
-              />
+              <FormAllDayCheckbox />
             )}
             <div className="w-full flex justify-end">
               <Button className="w-full lg:w-40" type="submit">
@@ -363,7 +180,7 @@ export const CreateForm = ({ type, date }: Props) => {
               </Button>
             </div>
           </form>
-        </Form>
+        </FormProvider>
       ) : null}
     </div>
   );
