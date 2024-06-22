@@ -32,19 +32,20 @@ import {
   addMinutes,
   endOfDay,
   format,
+  getMonth,
+  getYear,
   isToday,
   parse,
   startOfDay,
 } from "date-fns";
 import { cn, generateTimeBlocks, getNext15MinuteBlock } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type Props = {
   type: string;
   date: Date;
 };
-
-type FormData = z.infer<typeof TaskSchema> | z.infer<typeof EventSchema>;
 
 export const CreateForm = ({ type, date }: Props) => {
   const router = useRouter();
@@ -57,10 +58,14 @@ export const CreateForm = ({ type, date }: Props) => {
   const schema =
     type === "task" ? TaskSchema : type === "event" ? EventSchema : null;
 
+  type FormData = z.infer<typeof TaskSchema> | z.infer<typeof EventSchema>;
+
   const form = useForm<FormData>({
     resolver: schema ? zodResolver(schema) : undefined,
     defaultValues: {
       day: date,
+      month: getMonth(date),
+      year: getYear(date),
       priority: "medium",
       status: "incompleted",
     },
@@ -87,6 +92,13 @@ export const CreateForm = ({ type, date }: Props) => {
     setSelectedStartDate(null);
     form.reset({ day: date, startTime: undefined, endTime: undefined });
   }, [date, timeFormat, form]);
+
+  useEffect(() => {
+    if (type === "event") {
+      form.setValue("month", date.getMonth());
+      form.setValue("year", date.getFullYear());
+    }
+  }, [date, form, type]);
 
   const handleStartDateChange = (value: string) => {
     const dateFormat = "yyyy-MM-dd";
@@ -329,7 +341,21 @@ export const CreateForm = ({ type, date }: Props) => {
                 />
               </div>
             ) : (
-              <div></div>
+              <FormField
+                control={form.control}
+                name="isAllDay"
+                render={({ field }) => (
+                  <FormItem className="flex items-end gap-x-2">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormLabel>Will this event take whole day ?</FormLabel>
+                  </FormItem>
+                )}
+              />
             )}
             <div className="w-full flex justify-end">
               <Button className="w-full lg:w-40" type="submit">

@@ -1,6 +1,11 @@
 import { Calendar } from "@/components/ui/calendar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
-import { Plus } from "lucide-react";
+import { CalendarIcon, Plus } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 
 type Props = {
@@ -21,6 +26,26 @@ export const CreateCalendar = ({ date, setDate }: Props) => {
         </p>
       </div>
       <div className="flex flex-col lg:hidden">
+        <div className="bg-neutral-800 p-[10px] shadow-lg rounded-full">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex">
+              <CalendarIcon className="text-neutral-200" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="lg:hidden">
+              <Calendar
+                ISOWeek
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                captionLayout="dropdown-buttons"
+                fromYear={1960}
+                toYear={2030}
+                required
+                disabled={(date) => date < new Date()}
+              />
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         {/* TODO: Implement samll screen dropdown calendar and dropdown AI Helper on pro */}
       </div>
       <div className="hidden lg:flex flex-col gap-y-2">
@@ -40,6 +65,7 @@ export const CreateCalendar = ({ date, setDate }: Props) => {
           toYear={2030}
           className="bg-neutral-100/50 rounded-lg shadow-lg p-8 w-fit border"
           required
+          disabled={(date) => date < new Date()}
         />
       </div>
     </div>
