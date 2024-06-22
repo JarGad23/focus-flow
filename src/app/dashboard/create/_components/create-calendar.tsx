@@ -32,6 +32,7 @@ export const CreateCalendar = ({ date, setDate }: Props) => {
               <CalendarIcon className="text-neutral-200" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="lg:hidden">
+              {/* Fix selecting todays date not working */}
               <Calendar
                 ISOWeek
                 mode="single"
@@ -41,7 +42,11 @@ export const CreateCalendar = ({ date, setDate }: Props) => {
                 fromYear={1960}
                 toYear={2030}
                 required
-                disabled={(date) => date < new Date()}
+                disabled={(date) => {
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  return date < today;
+                }}
               />
             </DropdownMenuContent>
           </DropdownMenu>
@@ -65,7 +70,11 @@ export const CreateCalendar = ({ date, setDate }: Props) => {
           toYear={2030}
           className="bg-neutral-100/50 rounded-lg shadow-lg p-8 w-fit border"
           required
-          disabled={(date) => date < new Date()}
+          disabled={(date) => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return date < today;
+          }}
         />
       </div>
     </div>
