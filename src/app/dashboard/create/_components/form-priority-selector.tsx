@@ -15,7 +15,11 @@ import { cn } from "@/lib/utils";
 import { PriorityEnum } from "@/schemas/create-form-schema";
 import { useFormContext } from "react-hook-form";
 
-export const FormPrioritySelector = () => {
+type Props = {
+  disabled: boolean;
+};
+
+export const FormPrioritySelector = ({ disabled }: Props) => {
   const { control } = useFormContext();
 
   return (
@@ -37,7 +41,11 @@ export const FormPrioritySelector = () => {
                     : "bg-rose-500"
                 )}
               />
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select
+                value={field.value}
+                onValueChange={field.onChange}
+                disabled={disabled}
+              >
                 <SelectTrigger className="w-full focus:ring-offset-0 focus:ring-transparent outline-none">
                   <SelectValue placeholder="Select priority" />
                 </SelectTrigger>

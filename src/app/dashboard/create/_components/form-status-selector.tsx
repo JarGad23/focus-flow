@@ -14,7 +14,11 @@ import {
 } from "@/components/ui/select";
 import { StatusEnum } from "@/schemas/create-form-schema";
 
-export const FormStatusSelector = () => {
+type Props = {
+  disabled: boolean;
+};
+
+export const FormStatusSelector = ({ disabled }: Props) => {
   const { control } = useFormContext();
 
   return (
@@ -25,7 +29,11 @@ export const FormStatusSelector = () => {
         <FormItem>
           <FormLabel>Status</FormLabel>
           <FormControl>
-            <Select value={field.value} onValueChange={field.onChange}>
+            <Select
+              value={field.value}
+              onValueChange={field.onChange}
+              disabled={disabled}
+            >
               <SelectTrigger className="w-full focus:ring-offset-0 focus:ring-transparent outline-none">
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>

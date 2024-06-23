@@ -12,9 +12,10 @@ import { Textarea } from "@/components/ui/textarea";
 
 type Props = {
   type: string;
+  disabled: boolean;
 };
 
-export const FormTitleDescriptionFields = ({ type }: Props) => {
+export const FormTitleDescriptionFields = ({ type, disabled }: Props) => {
   const { control } = useFormContext();
 
   return (
@@ -26,7 +27,11 @@ export const FormTitleDescriptionFields = ({ type }: Props) => {
           <FormItem>
             <FormLabel>Title</FormLabel>
             <FormControl>
-              <Input placeholder="Write some code" {...field} />
+              <Input
+                placeholder="Write some code"
+                disabled={disabled}
+                {...field}
+              />
             </FormControl>
             <FormMessage>{fieldState.error?.message}</FormMessage>
           </FormItem>
@@ -46,6 +51,7 @@ export const FormTitleDescriptionFields = ({ type }: Props) => {
               <Textarea
                 className="resize-none"
                 placeholder="Complete one feature in major functionality in app"
+                disabled={disabled}
                 {...field}
               />
             </FormControl>
