@@ -23,6 +23,8 @@ import { FormPrioritySelector } from "./form-priority-selector";
 import { FormStatusSelector } from "./form-status-selector";
 import { FormTitleDescriptionFields } from "./form-title-description-fields";
 import { FormAllDayCheckbox } from "./form-all-day-checkbox";
+import { useMutation } from "@tanstack/react-query";
+import { createTaskEvent } from "../actions";
 
 type Props = {
   type: string;
@@ -31,11 +33,22 @@ type Props = {
 
 type TaskFormData = z.infer<typeof TaskSchema>;
 type EventFormData = z.infer<typeof EventSchema>;
-type FormData = TaskFormData | EventFormData;
+export type FormDataType = TaskFormData | EventFormData;
 
 export const CreateForm = ({ type, date }: Props) => {
   const router = useRouter();
   const { timeFormat } = useTimePeriod();
+  const { mutate: create, isPending } = useMutation({
+    mutationKey: ["create-task-event-form"],
+    mutationFn: createTaskEvent,
+    onError: () => {
+      //TODO: Add toast logic
+      console.log("Error");
+    },
+    onSuccess: (data) => {
+      router.push("/dashboard");
+    },
+  });
 
   const [schema, setSchema] = useState<ZodSchema>(TaskSchema);
 
@@ -51,7 +64,7 @@ export const CreateForm = ({ type, date }: Props) => {
     router.push(`?type=${value}`);
   };
 
-  const form = useForm<FormData>({
+  const form = useForm<FormDataType>({
     resolver: zodResolver(schema),
     defaultValues: {
       day: date,
@@ -59,7 +72,7 @@ export const CreateForm = ({ type, date }: Props) => {
       year: getYear(date),
       priority: "medium",
       status: "incompleted",
-    } as Partial<FormData>,
+    } as Partial<FormDataType>,
   });
 
   const [startDateOptions, setStartDateOptions] = useState<string[]>([]);
@@ -92,7 +105,7 @@ export const CreateForm = ({ type, date }: Props) => {
   }, [date, form, type]);
 
   useEffect(() => {
-    const resetValues: Partial<FormData> = {
+    const resetValues: Partial<FormDataType> = {
       day: date,
       month: getMonth(date),
       year: getYear(date),
@@ -144,8 +157,8 @@ export const CreateForm = ({ type, date }: Props) => {
     form.setValue("endTime", endTime);
   };
 
-  const onSubmit = (data: FormData) => {
-    console.log(data);
+  const onSubmit = (data: FormDataType) => {
+    if (type === "task" || type === "event") create({ data, type });
   };
 
   return (
@@ -157,7 +170,7 @@ export const CreateForm = ({ type, date }: Props) => {
       {type === "task" || type === "event" ? (
         <FormProvider {...form}>
           <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-            <FormTitleDescriptionFields type={type} />
+            <FormTitleDescriptionFields type={type} disabled={isPending} />
             {type === "task" ? (
               <div className="space-y-6">
                 <FormTimeSelectors
@@ -167,15 +180,20 @@ export const CreateForm = ({ type, date }: Props) => {
                   selectedStartDate={selectedStartDate}
                   startDateOptions={startDateOptions}
                   timeFormat={timeFormat}
+                  disabled={isPending}
                 />
-                <FormPrioritySelector />
-                <FormStatusSelector />
+                <FormPrioritySelector disabled={isPending} />
+                <FormStatusSelector disabled={isPending} />
               </div>
             ) : (
-              <FormAllDayCheckbox />
+              <FormAllDayCheckbox disabled={isPending} />
             )}
             <div className="w-full flex justify-end">
-              <Button className="w-full lg:w-40" type="submit">
+              <Button
+                className="w-full lg:w-40"
+                type="submit"
+                disabled={isPending}
+              >
                 Submit
               </Button>
             </div>

@@ -21,6 +21,7 @@ type Props = {
   handleEndDateChange: (value: string) => void;
   selectedStartDate: Date | null;
   timeFormat: string;
+  disabled: boolean;
 };
 
 export const FormTimeSelectors = ({
@@ -30,6 +31,7 @@ export const FormTimeSelectors = ({
   handleStartDateChange,
   timeFormat,
   startDateOptions,
+  disabled,
 }: Props) => {
   const { control } = useFormContext();
 
@@ -54,6 +56,7 @@ export const FormTimeSelectors = ({
                 onValueChange={(value) => {
                   handleStartDateChange(value);
                 }}
+                disabled={disabled}
               >
                 <SelectTrigger className="max-w-80 focus:ring-offset-0 focus:ring-transparent outline-none">
                   <SelectValue placeholder="Select start time" />
@@ -89,7 +92,7 @@ export const FormTimeSelectors = ({
                 onValueChange={(value) => {
                   handleEndDateChange(value);
                 }}
-                disabled={!selectedStartDate}
+                disabled={!selectedStartDate || disabled}
               >
                 <SelectTrigger className="max-w-80 focus:ring-offset-0 focus:ring-transparent outline-none">
                   <SelectValue placeholder="Select end time" />

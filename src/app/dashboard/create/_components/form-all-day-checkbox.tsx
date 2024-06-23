@@ -7,7 +7,11 @@ import {
 } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 
-export const FormAllDayCheckbox = () => {
+type Props = {
+  disabled: boolean;
+};
+
+export const FormAllDayCheckbox = ({ disabled }: Props) => {
   const { control } = useFormContext();
 
   return (
@@ -17,7 +21,11 @@ export const FormAllDayCheckbox = () => {
       render={({ field }) => (
         <FormItem className="flex items-end gap-x-2">
           <FormControl>
-            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+            <Checkbox
+              checked={field.value}
+              onCheckedChange={field.onChange}
+              disabled={disabled}
+            />
           </FormControl>
           <FormLabel>Will this event take whole day ?</FormLabel>
         </FormItem>
