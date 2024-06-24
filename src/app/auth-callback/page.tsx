@@ -1,15 +1,15 @@
 "use client";
 
+import { getAuthStatus } from "@/actions/get-auth-status";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import { getAuthStatus } from "./actions";
 import { useRouter } from "next/navigation";
 
 const AuthCallbackPage = () => {
   const router = useRouter();
   const { data } = useQuery({
     queryKey: ["auth-callback"],
-    queryFn: async () => getAuthStatus(),
+    queryFn: async () => await getAuthStatus(),
     retry: true,
     retryDelay: 500,
   });

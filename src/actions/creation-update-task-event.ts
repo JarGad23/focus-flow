@@ -3,11 +3,10 @@
 import { z } from "zod";
 import { db } from "@/db";
 import { EventSchema, TaskSchema } from "@/schemas/create-form-schema";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { redirect } from "next/navigation";
-import { FormDataType } from "./_components/create-form";
+import { FormDataType } from "@/app/dashboard/create/_components/create-form";
+import { validateUser } from "./validate-user";
 
-type createTaskEventProps = {
+type creationUpdateTaskEventProps = {
   data: FormDataType;
   type: "task" | "event";
   id?: string;
@@ -15,23 +14,6 @@ type createTaskEventProps = {
 
 type TaskType = z.infer<typeof TaskSchema>;
 type EventType = z.infer<typeof EventSchema>;
-
-const validateUser = async () => {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-
-  if (!user || !user.id) {
-    throw new Error("Unauthenticated");
-  }
-
-  const existingUser = await db.user.findUnique({ where: { id: user.id } });
-
-  if (!existingUser) {
-    redirect("/auth-callback");
-  }
-
-  return user;
-};
 
 const isUserOwner = async (
   userId: string,
@@ -55,11 +37,11 @@ const isUserOwner = async (
   }
 };
 
-export const createTaskEvent = async ({
+export const creationUpdateTaskEvent = async ({
   data,
   type,
   id,
-}: createTaskEventProps) => {
+}: creationUpdateTaskEventProps) => {
   const user = await validateUser();
 
   let validatedFields: TaskType | EventType;
