@@ -24,7 +24,7 @@ import { FormStatusSelector } from "./form-status-selector";
 import { FormTitleDescriptionFields } from "./form-title-description-fields";
 import { FormAllDayCheckbox } from "./form-all-day-checkbox";
 import { useMutation } from "@tanstack/react-query";
-import { createTaskEvent } from "../actions";
+import { creationUpdateTaskEvent } from "@/actions/creation-update-task-event";
 
 type Props = {
   type: string;
@@ -40,7 +40,7 @@ export const CreateForm = ({ type, date }: Props) => {
   const { timeFormat } = useTimePeriod();
   const { mutate: create, isPending } = useMutation({
     mutationKey: ["create-task-event-form"],
-    mutationFn: createTaskEvent,
+    mutationFn: creationUpdateTaskEvent,
     onError: () => {
       //TODO: Add toast logic
       console.log("Error");
