@@ -7,10 +7,27 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
+import { useQuery } from "@tanstack/react-query";
+import { getDayTasks } from "@/actions/get-day-tasks";
+import { useSelectedDate } from "@/store/useSelectedDate";
+import { Task } from "@prisma/client";
+import { LoadingUI } from "./loading-ui";
+import { ErrorUI } from "./error-ui";
+import { calculateTaskPosition, getOverlappingTasks } from "@/lib/utils";
 
 export const DayView = () => {
   const { timeFormat } = useTimePeriod();
+  const { day } = useSelectedDate();
   const [currentTimePosition, setCurrentTimePosition] = useState(0);
+
+  const {
+    data: tasks,
+    isError,
+    isLoading,
+  } = useQuery({
+    queryKey: ["get-day-tasks", day],
+    queryFn: async () => getDayTasks({ date: day }),
+  });
 
   useEffect(() => {
     const updateCurrentTimePosition = () => {
@@ -27,7 +44,17 @@ export const DayView = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+  if (isLoading) {
+    return <LoadingUI />;
+  }
+
+  if (isError) {
+    return <ErrorUI />;
+  }
+
   const hours = Array.from({ length: 24 }, (_, i) => i);
+
+  const overlappingTasksGroups = getOverlappingTasks(tasks || []);
 
   return (
     <div className="flex">
@@ -54,6 +81,40 @@ export const DayView = () => {
             &nbsp;
           </div>
         ))}
+        {overlappingTasksGroups.map((group, groupIndex) => {
+          const numTasks = group.length;
+          const taskWidth = 100 / numTasks;
+
+          return group.map((task, taskIndex) => {
+            const { startPosition, taskHeight } = calculateTaskPosition(task);
+
+            return (
+              <div
+                key={task.id}
+                className="absolute bg-primary/60 p-2 rounded-lg shadow-md flex items-center gap-x-2"
+                style={{
+                  top: `${startPosition}px`,
+                  left: `${taskIndex * taskWidth}%`,
+                  width: `${taskWidth}%`,
+                  height: `${taskHeight}px`,
+                }}
+              >
+                <div className="font-semibold">{task.title}</div>
+                <div className="text-sm">
+                  {timeFormat === "24H"
+                    ? `${format(new Date(task.startTime), "HH:mm")} - ${format(
+                        new Date(task.endTime),
+                        "HH:mm"
+                      )}`
+                    : `${format(new Date(task.startTime), "h:mm a")} - ${format(
+                        new Date(task.endTime),
+                        "h:mm a"
+                      )}`}
+                </div>
+              </div>
+            );
+          });
+        })}
         <div
           style={{ top: `${currentTimePosition}px` }}
           className="absolute left-0 w-full border-t-2 border-primary"
@@ -62,7 +123,7 @@ export const DayView = () => {
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="absolute left-0 -translate-y-1/2 size-3 rounded-full bg-blue-950" />
+                  <div className="absolute -left-[6px] -translate-y-1/2 size-3 rounded-full bg-blue-950" />
                 </TooltipTrigger>
                 <TooltipContent sideOffset={12}>
                   Current time:{" "}
