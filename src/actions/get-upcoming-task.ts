@@ -47,7 +47,7 @@ export const getUpcomingTask = async () => {
   });
 
   if (!upcomingTask) {
-    throw new Error("Task not found");
+    return null;
   }
 
   return {

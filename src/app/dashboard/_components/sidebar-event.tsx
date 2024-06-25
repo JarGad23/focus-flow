@@ -1,14 +1,12 @@
-import { getUpcomingTask } from "@/actions/get-upcoming-task";
+import { getUpcomingEvent } from "@/actions/get-upcoming-event";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useTimePeriod } from "@/store/useTimePeriod";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 
-export const SidebarTask = () => {
-  const { timeFormat } = useTimePeriod();
+export const SidebarEvent = () => {
   const { data, isError, isLoading } = useQuery({
-    queryKey: ["get-upcoming-task"],
-    queryFn: async () => await getUpcomingTask(),
+    queryKey: ["get-upcoming-event"],
+    queryFn: async () => await getUpcomingEvent(),
   });
 
   if (isLoading) {
@@ -35,8 +33,8 @@ export const SidebarTask = () => {
 
   const heading = data
     ? data?.isCurrent
-      ? "Current Task:"
-      : "Incoming Task:"
+      ? "Current Event:"
+      : "Incoming Event:"
     : null;
 
   return (
@@ -44,7 +42,7 @@ export const SidebarTask = () => {
       <h4 className="text-zinc-950">{heading}</h4>
       {!data || isError ? (
         <div className="flex items-center justify-center border rounded-md p-2 md:p-4 text-sm shadow-md">
-          <p className="font-semibold">No upcoming tasks for today!</p>
+          <p className="font-semibold">No upcoming events in your calendar!</p>
         </div>
       ) : (
         <div className="flex flex-col gap-y-2 border rounded-md p-2 md:p-4 text-sm shadow-md">
@@ -53,20 +51,28 @@ export const SidebarTask = () => {
             <span className="font-semibold">{data.title}</span>
           </div>
           <div className="flex items-center gap-x-2">
-            <p>Start Time:</p>
+            <p>Date:</p>
             <span className="font-semibold">
-              {timeFormat === "24H"
-                ? format(new Date(data.startTime), "HH:mm")
-                : format(new Date(data.startTime), "h:mm a")}
+              {format(data.day, "dd LLL, y")}
             </span>
           </div>
           <div className="flex items-center gap-x-2">
-            <p>End time:</p>
-            <span className="font-semibold">
-              {timeFormat === "24H"
-                ? format(new Date(data.endTime), "HH:mm")
-                : format(new Date(data.endTime), "h:mm a")}
-            </span>
+            {data.isCurrent ? (
+              <p>
+                {data.isAllDay
+                  ? "This event was planned to took a whole day"
+                  : "This event won't take entire day"}
+              </p>
+            ) : (
+              <div className="flex items-center gap-x-2">
+                <p>Days left:</p>
+                <span className="font-semibold">
+                  {data.daysLeft === 1
+                    ? `${data.daysLeft} day`
+                    : `${data.daysLeft} days`}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       )}
