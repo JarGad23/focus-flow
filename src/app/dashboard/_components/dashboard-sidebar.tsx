@@ -8,6 +8,7 @@ import { SidebarCalendar } from "./sidebar-calendar";
 import { format } from "date-fns";
 import { SidebarActions } from "./sidebar-actions";
 import { SidebarTask } from "./sidebar-task";
+import { SidebarEvent } from "./sidebar-event";
 
 export const DashboardSidebar = () => {
   const { isOpen } = useSidebar();
@@ -51,31 +52,8 @@ export const DashboardSidebar = () => {
       {/* TODO: Fill that with fetched event data */}
       <SidebarTask />
       {/* TODO: Fill with next event data */}
-      <div className="w-full flex flex-col gap-y-1">
-        <h4 className="text-zinc-950">Incoming Event:</h4>
-        <div className="w-full flex flex-col gap-y-2 border rounded-md p-2 md:p-4 text-sm shadow-md">
-          <div className="flex items-center gap-x-2">
-            <p>Date:</p>
-            <span className="font-semibold">
-              {timeFormat === "24H"
-                ? format(new Date(2022, 1, 1), "HH:mm")
-                : format(new Date(2022, 1, 1), "h:mm a")}
-            </span>
-          </div>
-          <div className="flex items-center gap-x-2">
-            <p>Days left:</p>
-            <span className="font-semibold">
-              {timeFormat === "24H"
-                ? format(new Date(2022, 1, 1), "HH:mm")
-                : format(new Date(2022, 1, 1), "h:mm a")}
-            </span>
-          </div>
-          <div className=" text-center flex flex-col gap-y-1">
-            <p>Title:</p>
-            <span className="font-semibold">New event in my village</span>
-          </div>
-        </div>
-      </div>
+      <SidebarEvent />
+
       <SidebarActions />
     </div>
   );
