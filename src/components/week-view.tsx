@@ -181,6 +181,8 @@ export const WeekView = () => {
                             key={task.id}
                             className={cn(
                               "absolute bg-blue-500 p-2 rounded-lg shadow-md text-[12px] line-clamp-1 truncate leading-[12px]",
+                              taskHeight === 16 &&
+                                "flex flex-row items-center gap-x-2 leading-normal",
                               task.priority === Priority.high && "bg-rose-500",
                               task.priority === Priority.low && "bg-green-500"
                             )}
