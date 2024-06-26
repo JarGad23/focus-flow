@@ -68,3 +68,24 @@ export const calculateTaskPosition = (task: Task) => {
 
   return { startPosition, taskHeight };
 };
+
+export const calculateTaskPositionAndWidth = (
+  task: Task,
+  taskIndex: number,
+  groupSize: number
+) => {
+  const startHour = new Date(task.startTime).getHours();
+  const startMinute = new Date(task.startTime).getMinutes();
+  const endHour = new Date(task.endTime).getHours();
+  const endMinute = new Date(task.endTime).getMinutes();
+
+  const startPosition = startHour * 64 + (startMinute / 15) * 16;
+  const endPosition = endHour * 64 + (endMinute / 15) * 16;
+  const taskHeight = endPosition - startPosition;
+
+  const overlap = 0.5; // 30% overlap
+  const width = 100 / groupSize + (groupSize - 1) * overlap;
+  const left = taskIndex * (100 / groupSize - overlap);
+
+  return { startPosition, taskHeight, left, width };
+};

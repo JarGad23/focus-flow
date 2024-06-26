@@ -10,10 +10,10 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { getDayTasks } from "@/actions/get-day-tasks";
 import { useSelectedDate } from "@/store/useSelectedDate";
-import { Task } from "@prisma/client";
 import { LoadingUI } from "./loading-ui";
 import { ErrorUI } from "./error-ui";
-import { calculateTaskPosition, getOverlappingTasks } from "@/lib/utils";
+import { calculateTaskPosition, cn, getOverlappingTasks } from "@/lib/utils";
+import { Priority } from "@prisma/client";
 
 export const DayView = () => {
   const { timeFormat } = useTimePeriod();
@@ -91,7 +91,11 @@ export const DayView = () => {
             return (
               <div
                 key={task.id}
-                className="absolute bg-primary/60 p-2 rounded-lg shadow-md flex items-center gap-x-2"
+                className={cn(
+                  "absolute bg-blue-500 p-2 rounded-lg shadow-md flex items-center gap-x-2",
+                  task.priority === Priority.high && "bg-rose-500",
+                  task.priority === Priority.low && "bg-green-500"
+                )}
                 style={{
                   top: `${startPosition}px`,
                   left: `${taskIndex * taskWidth}%`,
