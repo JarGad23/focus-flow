@@ -8,11 +8,31 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
+import { useQuery } from "@tanstack/react-query";
+import { getWeekTasks } from "@/actions/get-week-tasks";
+import { LoadingUI } from "./loading-ui";
+import { ErrorUI } from "./error-ui";
+import {
+  calculateTaskPosition,
+  calculateTaskPositionAndWidth,
+  cn,
+  getOverlappingTasks,
+} from "@/lib/utils";
+import { Priority } from "@prisma/client";
 
 export const WeekView = () => {
   const { week } = useSelectedDate();
   const { timeFormat } = useTimePeriod();
   const [currentTimePosition, setCurrentTimePosition] = useState(0);
+
+  const {
+    data: tasks,
+    isError,
+    isLoading,
+  } = useQuery({
+    queryKey: ["get-week-tasks", week],
+    queryFn: async () => getWeekTasks({ week }),
+  });
 
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -71,6 +91,21 @@ export const WeekView = () => {
     (_, i) => new Date(week[0].getTime() + i * 86400000)
   );
 
+  if (isLoading) {
+    return <LoadingUI />;
+  }
+
+  if (isError) {
+    return <ErrorUI />;
+  }
+
+  const tasksByDay = days.map(
+    (day) =>
+      tasks?.filter(
+        (task) => new Date(task.startTime).toDateString() === day.toDateString()
+      ) || []
+  );
+
   return (
     <div className="flex relative">
       <div className="flex-none w-16 bg-gray-50 border-r mt-10">
@@ -107,35 +142,93 @@ export const WeekView = () => {
             className="relative flex md:flex-nowrap select-none"
             style={{ minWidth: "100%" }}
           >
-            {days.map((day, index) => (
-              <div
-                key={index}
-                className="flex flex-col border-r flex-shrink-0 w-[calc(100%/1)] md:w-[calc(100%/3)] xl:w-[calc(100%/5)] 2xl:w-[calc(100%/7)]"
-              >
-                <div className="flex items-center justify-center bg-gray-100 border-b h-10">
-                  <span className="text-lg font-semibold">
-                    {format(day, "EEE d")}
-                  </span>
-                </div>
-                <div className="flex-grow">
-                  {hours.map((hour) => (
+            {days.map((day, index) => {
+              const dayTasks = tasksByDay[index];
+              const overlappingTasksGroups = getOverlappingTasks(dayTasks);
+
+              return (
+                <div
+                  key={index}
+                  className="flex flex-col border-r flex-shrink-0 w-[calc(100%/1)] md:w-[calc(100%/3)] xl:w-[calc(100%/5)] 2xl:w-[calc(100%/7)]"
+                >
+                  <div className="flex items-center justify-center bg-gray-100 border-b h-10">
+                    <span className="text-lg font-semibold">
+                      {format(day, "EEE d")}
+                    </span>
+                  </div>
+                  <div className="flex-grow relative">
+                    {hours.map((hour) => (
+                      <div
+                        key={hour}
+                        className="h-16 border-b flex-grow relative"
+                      >
+                        &nbsp;
+                      </div>
+                    ))}
+                    {overlappingTasksGroups.map((group, groupIndex) => {
+                      const numTasks = group.length;
+
+                      return group.map((task, taskIndex) => {
+                        const { startPosition, taskHeight, left, width } =
+                          calculateTaskPositionAndWidth(
+                            task,
+                            taskIndex,
+                            numTasks
+                          );
+
+                        return (
+                          <div
+                            key={task.id}
+                            className={cn(
+                              "absolute bg-blue-500 p-2 rounded-lg shadow-md text-[12px] line-clamp-1 truncate leading-[12px]",
+                              task.priority === Priority.high && "bg-rose-500",
+                              task.priority === Priority.low && "bg-green-500"
+                            )}
+                            style={{
+                              top: `${startPosition}px`,
+                              height: `${taskHeight}px`,
+                              left: `${left}%`,
+                              width: `${width}%`,
+                            }}
+                          >
+                            <div className="font-semibold">{task.title}</div>
+                            <div className="text-[10px]">
+                              {timeFormat === "24H"
+                                ? `${format(
+                                    new Date(task.startTime),
+                                    "HH:mm"
+                                  )} - ${format(
+                                    new Date(task.endTime),
+                                    "HH:mm"
+                                  )}`
+                                : `${format(
+                                    new Date(task.startTime),
+                                    "h:mm a"
+                                  )} - ${format(
+                                    new Date(task.endTime),
+                                    "h:mm a"
+                                  )}`}
+                            </div>
+                          </div>
+                        );
+                      });
+                    })}
+
                     <div
-                      key={hour}
-                      className="h-16 border-b flex-grow relative"
-                    >
-                      &nbsp;
-                    </div>
-                  ))}
-                  {index === 0 && (
-                    <div
-                      style={{ top: `${currentTimePosition}px` }}
-                      className="absolute left-0 min-w-full border-t-2 border-primary"
+                      style={{
+                        top: `${currentTimePosition}px`,
+                        width: "calc(100% + 8px)",
+                        left: "-8px",
+                      }}
+                      className="absolute border-t-2 border-primary"
                     >
                       <div className="relative">
                         <TooltipProvider delayDuration={100}>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <div className="absolute left-0 -translate-y-1/2 size-3 rounded-full bg-blue-950" />
+                              {index === 0 && (
+                                <div className="absolute -translate-y-1/2 size-3 rounded-full bg-blue-950" />
+                              )}
                             </TooltipTrigger>
                             <TooltipContent sideOffset={12}>
                               Current time:{" "}
@@ -149,10 +242,10 @@ export const WeekView = () => {
                         </TooltipProvider>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
