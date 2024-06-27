@@ -29,6 +29,9 @@ export const getDayTasks = async ({ date }: Props) => {
         lt: endOfDay,
       },
     },
+    orderBy: {
+      status: "desc",
+    },
   });
 
   return tasks;
