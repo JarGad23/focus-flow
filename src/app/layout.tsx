@@ -3,6 +3,7 @@ import { Roboto } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/query-provider";
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/sonner";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -25,6 +26,7 @@ export default function RootLayout({
         <main className="min-h-screen h-auto grainy-light">
           <QueryProvider>{children}</QueryProvider>
         </main>
+        <Toaster richColors position="top-center" />
       </body>
     </html>
   );
