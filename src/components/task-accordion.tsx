@@ -1,20 +1,18 @@
-import { Priority, Status, Task } from "@prisma/client";
+import { Status, Task } from "@prisma/client";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion";
-import { cn, generateTimeBlocks, getNext15MinuteBlock } from "@/lib/utils";
-import { Calendar, Edit, FileWarning, TrendingUp } from "lucide-react";
+import { cn, generateTimeBlocks } from "@/lib/utils";
+import { Edit } from "lucide-react";
 import { useTimePeriod } from "@/store/useTimePeriod";
 import {
   addMinutes,
   endOfDay,
   format,
-  isToday,
   parse,
-  parseISO,
   setHours,
   setMinutes,
   startOfDay,
@@ -47,7 +45,7 @@ export const TaskAccordion = ({ task }: Props) => {
   const queryClient = useQueryClient();
 
   const { mutate: update, isPending } = useMutation({
-    mutationKey: ["create-task-event-form"],
+    mutationKey: ["update-task"],
     mutationFn: creationUpdateTaskEvent,
     onError: () => {
       toast.error("Failed to update task");

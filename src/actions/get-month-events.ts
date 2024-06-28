@@ -19,6 +19,9 @@ export const getMonthEvents = async ({ month, year }: Props) => {
         year: year,
       },
     },
+    orderBy: {
+      day: "asc",
+    },
   });
 
   return events;

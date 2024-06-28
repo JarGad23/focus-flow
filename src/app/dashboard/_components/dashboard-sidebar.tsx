@@ -9,6 +9,9 @@ import { format } from "date-fns";
 import { SidebarActions } from "./sidebar-actions";
 import { SidebarTask } from "./sidebar-task";
 import { SidebarEvent } from "./sidebar-event";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Home } from "lucide-react";
 
 export const DashboardSidebar = () => {
   const { isOpen } = useSidebar();
@@ -49,6 +52,16 @@ export const DashboardSidebar = () => {
           </h4>
         )}
       </div>
+      <Link href="/dashboard" className="w-full">
+        <Button
+          className="w-full flex items-center gap-x-2"
+          size="sm"
+          variant="outline"
+        >
+          <Home className="size-4" />
+          Dashboard
+        </Button>
+      </Link>
       <SidebarTask />
       <SidebarEvent />
 
