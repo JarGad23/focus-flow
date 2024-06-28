@@ -37,7 +37,7 @@ export const FormPrioritySelector = ({ disabled }: Props) => {
                   field.value === "low"
                     ? "bg-green-500"
                     : field.value === "medium"
-                    ? "bg-orange-400"
+                    ? "bg-primary"
                     : "bg-rose-500"
                 )}
               />
