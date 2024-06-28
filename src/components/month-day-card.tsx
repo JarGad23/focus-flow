@@ -15,7 +15,6 @@ export const MonthDayCard = ({
   isFirstDayOfMonth,
   events,
 }: Props) => {
-  console.log(events);
   return (
     <div className="w-full absolute top-[10px] flex flex-col items-center p-1 gap-y-1">
       <span>
