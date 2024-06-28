@@ -2,6 +2,7 @@ import { EventSchema, TaskSchema } from "@/schemas/create-form-schema";
 import { useRouter } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
 import { ZodSchema, z } from "zod";
+import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTimePeriod } from "@/store/useTimePeriod";
 import { useEffect, useState } from "react";
@@ -17,12 +18,12 @@ import {
 } from "date-fns";
 import { generateTimeBlocks, getNext15MinuteBlock } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { FormTypeSelector } from "./form-type-selector";
-import { FormTimeSelectors } from "./form-time-selectors";
-import { FormPrioritySelector } from "./form-priority-selector";
-import { FormStatusSelector } from "./form-status-selector";
-import { FormTitleDescriptionFields } from "./form-title-description-fields";
-import { FormAllDayCheckbox } from "./form-all-day-checkbox";
+import { FormTypeSelector } from "@/components/form-components/form-type-selector";
+import { FormTimeSelectors } from "@/components/form-components/form-time-selectors";
+import { FormPrioritySelector } from "@/components/form-components/form-priority-selector";
+import { FormStatusSelector } from "@/components/form-components/form-status-selector";
+import { FormTitleDescriptionFields } from "@/components/form-components/form-title-description-fields";
+import { FormAllDayCheckbox } from "@/components/form-components/form-all-day-checkbox";
 import { useMutation } from "@tanstack/react-query";
 import { creationUpdateTaskEvent } from "@/actions/creation-update-task-event";
 
@@ -42,8 +43,7 @@ export const CreateForm = ({ type, date }: Props) => {
     mutationKey: ["create-task-event-form"],
     mutationFn: creationUpdateTaskEvent,
     onError: () => {
-      //TODO: Add toast logic
-      console.log("Error");
+      toast.error("Failed to update task");
     },
     onSuccess: (data) => {
       router.push("/dashboard");

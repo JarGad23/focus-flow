@@ -49,9 +49,7 @@ export const DashboardSidebar = () => {
           </h4>
         )}
       </div>
-      {/* TODO: Fill that with fetched event data */}
       <SidebarTask />
-      {/* TODO: Fill with next event data */}
       <SidebarEvent />
 
       <SidebarActions />

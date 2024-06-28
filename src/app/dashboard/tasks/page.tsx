@@ -3,7 +3,7 @@
 import { getDayTasks } from "@/actions/get-day-tasks";
 import { ErrorUI } from "@/components/error-ui";
 import { LoadingUI } from "@/components/loading-ui";
-import { TaskAccordion } from "@/components/task-accordion.tsx";
+import { TaskAccordion } from "@/components/task-accordion";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSelectedDate } from "@/store/useSelectedDate";
@@ -65,7 +65,7 @@ const TasksPage = () => {
           </Link>
         </div>
       ) : (
-        <ScrollArea className="w-full flex flex-col max-h-[500px]">
+        <ScrollArea className="w-full flex flex-col max-h-[500px] shadow-md">
           {tasks.map((task) => (
             <TaskAccordion task={task} />
           ))}
