@@ -29,10 +29,21 @@ export const getDayTasks = async ({ date }: Props) => {
         lt: endOfDay,
       },
     },
-    orderBy: {
-      status: "desc",
-    },
+    orderBy: [
+      {
+        startTime: "asc",
+      },
+    ],
   });
 
-  return tasks;
+  const sortedTasks = tasks.sort((a, b) => {
+    if (a.status === "completed" && b.status !== "completed") {
+      return -1; // a przed b
+    } else if (a.status !== "completed" && b.status === "completed") {
+      return 1; // b przed a
+    }
+    return 0; // bez zmiany kolejności, jeśli oba mają ten sam status
+  });
+
+  return sortedTasks;
 };
