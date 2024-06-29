@@ -5,14 +5,17 @@ import { ErrorUI } from "@/components/error-ui";
 import { LoadingUI } from "@/components/loading-ui";
 import { TaskAccordion } from "@/components/task-accordion";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSelectedDate } from "@/store/useSelectedDate";
+import { useTimePeriod } from "@/store/useTimePeriod";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Ghost, Plus } from "lucide-react";
 import Link from "next/link";
 
 const TasksPage = () => {
+  const { timeFormat } = useTimePeriod();
   const { day } = useSelectedDate();
   const {
     data: tasks,
@@ -30,6 +33,19 @@ const TasksPage = () => {
   if (isError || !tasks) {
     return <ErrorUI />;
   }
+
+  const completedTasks = tasks.filter((task) => task.status === "completed");
+  const inProgressTasks = tasks.filter((task) => task.status === "inProgress");
+  const incompletedTasks = tasks.filter(
+    (task) => task.status === "incompleted"
+  );
+
+  const sortedTasksArray = [...tasks];
+  sortedTasksArray.sort(
+    (a, b) => a.startTime.getHours() - b.startTime.getHours()
+  );
+
+  const completedPercentage = (completedTasks.length / tasks.length) * 100;
 
   return (
     <div className="w-full p-4 lg:p-8 max-w-7xl mx-auto mt-8 flex flex-col gap-y-4">
@@ -71,6 +87,37 @@ const TasksPage = () => {
           ))}
         </ScrollArea>
       )}
+      <div className="w-full flex gap-x-8">
+        <div className="w-full bg-white shadow-lg rounded-lg p-4 flex flex-col gap-y-4">
+          <h4 className="text-xl font-semibold">Day overview</h4>
+          <div className="flex flex-col gap-y-1">
+            {sortedTasksArray.map((task, index) => (
+              <div className="flex items-center justify-between">
+                <p className="flex gap-x-1">
+                  {index + 1}.
+                  <span className="font-semibold">{task.title}</span>
+                </p>
+                <div className="flex items-center gap-x-1 font-semibold">
+                  {timeFormat === "24H"
+                    ? format(new Date(task.startTime), "HH:mm")
+                    : format(new Date(task.startTime), "h:mm a")}
+                  <span>-</span>
+                  {timeFormat === "24H"
+                    ? format(new Date(task.endTime), "HH:mm")
+                    : format(new Date(task.endTime), "h:mm a")}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="w-full bg-white shadow-lg rounded-lg p-4 flex flex-col gap-y-4">
+          <h4 className="text-xl font-semibold">Task complition</h4>
+          <p>Task Completed {completedTasks.length} </p>
+          <p>Task in Progress {inProgressTasks.length}</p>
+          <p>Task Incompleted {incompletedTasks.length}</p>
+          <Progress className="w-full" value={completedPercentage} />
+        </div>
+      </div>
     </div>
   );
 };

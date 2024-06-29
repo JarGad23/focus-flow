@@ -75,6 +75,21 @@ const EventsPage = () => {
           ))}
         </ScrollArea>
       )}
+      <div className="w-1/2 bg-white shadow-lg rounded-lg p-4 flex flex-col gap-y-4">
+        <h4 className="text-xl font-semibold">Month overview</h4>
+        <div className="flex flex-col gap-y-1">
+          {events.map((event, index) => (
+            <div className="flex items-center justify-between">
+              <p className="flex gap-x-1">
+                {index + 1}.<span className="font-semibold">{event.title}</span>
+              </p>
+              <div className="flex items-center gap-x-1 font-semibold">
+                {format(event.day, "dd MMMM yyyy")}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
