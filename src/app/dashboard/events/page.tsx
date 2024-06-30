@@ -1,13 +1,13 @@
 "use client";
 
-import { getDayTasks } from "@/actions/get-day-tasks";
 import { getMonthEvents } from "@/actions/get-month-events";
+import { ConfirmationModal } from "@/components/confirmation-modal";
 import { ErrorUI } from "@/components/error-ui";
 import { EventAccordion } from "@/components/event-accordion";
 import { LoadingUI } from "@/components/loading-ui";
-import { TaskAccordion } from "@/components/task-accordion";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useDeleteModal } from "@/store/use-delete-modal";
 import { useSelectedDate } from "@/store/useSelectedDate";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -15,6 +15,7 @@ import { Ghost, Plus } from "lucide-react";
 import Link from "next/link";
 
 const EventsPage = () => {
+  const { onConfirm } = useDeleteModal();
   const { month, year } = useSelectedDate();
   const {
     data: events,
@@ -69,7 +70,7 @@ const EventsPage = () => {
           </Link>
         </div>
       ) : (
-        <ScrollArea className="w-full flex flex-col max-h-[500px] shadow-md">
+        <ScrollArea className="relative w-full flex flex-col max-h-[500px] shadow-md">
           {events.map((event) => (
             <EventAccordion event={event} />
           ))}
@@ -90,6 +91,7 @@ const EventsPage = () => {
           ))}
         </div>
       </div>
+      <ConfirmationModal type="event" onConfirm={onConfirm} />
     </div>
   );
 };
