@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
 } from "./ui/accordion";
 import { cn, generateTimeBlocks } from "@/lib/utils";
-import { Edit } from "lucide-react";
+import { Edit, X } from "lucide-react";
 import { useTimePeriod } from "@/store/useTimePeriod";
 import {
   addMinutes,
@@ -31,6 +31,8 @@ import { creationUpdateTaskEvent } from "@/actions/creation-update-task-event";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { TaskAccordionContent } from "./task-accordion-content";
 import { toast } from "sonner";
+import { deleteTask } from "@/actions/delete-task";
+import { useDeleteModal } from "@/store/use-delete-modal";
 
 type Props = {
   task: Task;
@@ -40,11 +42,12 @@ type TaskFormData = z.infer<typeof TaskSchema>;
 
 export const TaskAccordion = ({ task }: Props) => {
   const { timeFormat } = useTimePeriod();
+  const { onOpen } = useDeleteModal();
   const accordionTriggerRef = useRef<ElementRef<"button">>(null);
 
   const queryClient = useQueryClient();
 
-  const { mutate: update, isPending } = useMutation({
+  const { mutate: update, isPending: pendingUpdate } = useMutation({
     mutationKey: ["update-task"],
     mutationFn: creationUpdateTaskEvent,
     onError: () => {
@@ -55,6 +58,22 @@ export const TaskAccordion = ({ task }: Props) => {
       queryClient.invalidateQueries({ queryKey: ["get-day-tasks", task.day] });
     },
   });
+
+  const { mutate: onDelete, isPending: pendingDeletion } = useMutation({
+    mutationKey: ["delete-task"],
+    mutationFn: deleteTask,
+    onError: () => {
+      toast.error("Failed to delete task");
+    },
+    onSuccess: () => {
+      toast.success("Task deleted successfull");
+      queryClient.invalidateQueries({
+        queryKey: ["get-day-tasks", task.day],
+      });
+    },
+  });
+
+  const isPending = pendingDeletion || pendingUpdate ? true : false;
 
   const [isEditing, setIsEditing] = useState(false);
   const [startDateOptions, setStartDateOptions] = useState<string[]>([]);
@@ -150,6 +169,10 @@ export const TaskAccordion = ({ task }: Props) => {
     });
   };
 
+  const onConfirm = () => {
+    onDelete(task.id);
+  };
+
   const isFormChangedAndValid =
     Object.keys(dirtyFields).length > 0 && form.formState.isValid;
 
@@ -158,26 +181,38 @@ export const TaskAccordion = ({ task }: Props) => {
       <AccordionItem value={task.title} className="px-4 rounded-md shadow-md">
         <AccordionTrigger
           ref={accordionTriggerRef}
-          className="flex justify-between items-center"
+          className="flex justify-between items-center group"
         >
           <div
             className={cn(
-              "w-full text-left",
+              "w-full text-left group-hover:underline",
               task.status === Status.completed &&
                 "text-muted-foreground line-through"
             )}
           >
             {task.title}
           </div>
-
-          <Button
-            variant="outline"
-            className="flex items-center gap-x-2 mr-2"
-            onClick={onClick}
-          >
-            Edit
-            <Edit className="size-5" />
-          </Button>
+          <div className="flex gap-x-2">
+            <Button
+              variant="destructive"
+              className="ml-auto flex items-center gap-x-2"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpen(task.id, onConfirm);
+              }}
+            >
+              Delete
+              <X className="size-4" />
+            </Button>
+            <Button
+              variant="outline"
+              className="flex items-center gap-x-2 mr-2 group-hover:underline"
+              onClick={onClick}
+            >
+              Edit
+              <Edit className="size-5" />
+            </Button>
+          </div>
         </AccordionTrigger>
         <AccordionContent className="flex flex-col gap-y-2">
           {isEditing ? (

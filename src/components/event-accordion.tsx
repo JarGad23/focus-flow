@@ -7,7 +7,7 @@ import {
 } from "./ui/accordion";
 import { ElementRef, useRef, useState } from "react";
 import { Button } from "./ui/button";
-import { Edit } from "lucide-react";
+import { Edit, X } from "lucide-react";
 import { FormProvider, useForm, useFormState } from "react-hook-form";
 import { FormTitleDescriptionFields } from "./form-components/form-title-description-fields";
 import { EventSchema } from "@/schemas/create-form-schema";
@@ -18,6 +18,8 @@ import { creationUpdateTaskEvent } from "@/actions/creation-update-task-event";
 import { toast } from "sonner";
 import { EventAccordionContent } from "./event-accordion-content";
 import { FormAllDayCheckbox } from "./form-components/form-all-day-checkbox";
+import { useDeleteModal } from "@/store/use-delete-modal";
+import { deleteEvent } from "@/actions/delete-event";
 
 type Props = {
   event: Event;
@@ -26,11 +28,12 @@ type Props = {
 type EventFormData = z.infer<typeof EventSchema>;
 
 export const EventAccordion = ({ event }: Props) => {
+  const { onOpen } = useDeleteModal();
   const accordionTriggerRef = useRef<ElementRef<"button">>(null);
   const [isEditing, setIsEditing] = useState(false);
   const queryClient = useQueryClient();
 
-  const { mutate: update, isPending } = useMutation({
+  const { mutate: update, isPending: pendingUpdate } = useMutation({
     mutationKey: ["update-event"],
     mutationFn: creationUpdateTaskEvent,
     onError: () => {
@@ -43,6 +46,22 @@ export const EventAccordion = ({ event }: Props) => {
       });
     },
   });
+
+  const { mutate: onDelete, isPending: pendingDeletion } = useMutation({
+    mutationKey: ["delete-event"],
+    mutationFn: deleteEvent,
+    onError: () => {
+      toast.error("Failed to delete event");
+    },
+    onSuccess: () => {
+      toast.success("Event deleted successfull");
+      queryClient.invalidateQueries({
+        queryKey: ["get-month-events", event.month, event.year],
+      });
+    },
+  });
+
+  const isPending = pendingDeletion || pendingUpdate ? true : false;
 
   const form = useForm<EventFormData>({
     resolver: zodResolver(EventSchema),
@@ -76,6 +95,10 @@ export const EventAccordion = ({ event }: Props) => {
     });
   };
 
+  const onConfirm = () => {
+    onDelete(event.id);
+  };
+
   const isFormChangedAndValid =
     Object.keys(dirtyFields).length > 0 && form.formState.isValid;
 
@@ -84,18 +107,33 @@ export const EventAccordion = ({ event }: Props) => {
       <AccordionItem value={event.title} className="px-4 rounded-md shadow-md">
         <AccordionTrigger
           ref={accordionTriggerRef}
-          className="flex items-center"
+          className="flex items-center group"
         >
-          <p className="w-full text-left">{event.title}</p>
+          <p className="w-full text-left group-hover:underline">
+            {event.title}
+          </p>
 
-          <Button
-            variant="outline"
-            className="flex items-center gap-x-2 mr-2"
-            onClick={onClick}
-          >
-            Edit
-            <Edit className="size-5" />
-          </Button>
+          <div className="flex gap-x-2">
+            <Button
+              variant="destructive"
+              className="ml-auto flex items-center gap-x-2"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpen(event.id, onConfirm);
+              }}
+            >
+              Delete
+              <X className="size-4" />
+            </Button>
+            <Button
+              variant="outline"
+              className="flex items-center gap-x-2 mr-2 group-hover:underline"
+              onClick={onClick}
+            >
+              Edit
+              <Edit className="size-5" />
+            </Button>
+          </div>
         </AccordionTrigger>
         <AccordionContent className="flex flex-col gap-y-2">
           {isEditing ? (
