@@ -13,12 +13,12 @@ import { getWeekTasks } from "@/actions/get-week-tasks";
 import { LoadingUI } from "./loading-ui";
 import { ErrorUI } from "./error-ui";
 import {
-  calculateTaskPosition,
   calculateTaskPositionAndWidth,
   cn,
   getOverlappingTasks,
 } from "@/lib/utils";
 import { Priority } from "@prisma/client";
+import { TaskDialog } from "./task-dialog";
 
 export const WeekView = () => {
   const { week } = useSelectedDate();
@@ -177,41 +177,44 @@ export const WeekView = () => {
                           );
 
                         return (
-                          <div
-                            key={task.id}
-                            className={cn(
-                              "absolute bg-blue-500 p-2 rounded-lg shadow-md text-[12px] line-clamp-1 truncate leading-[12px]",
-                              taskHeight === 16 &&
-                                "flex flex-row items-center gap-x-2 leading-normal",
-                              task.priority === Priority.high && "bg-rose-500",
-                              task.priority === Priority.low && "bg-green-500"
-                            )}
-                            style={{
-                              top: `${startPosition}px`,
-                              height: `${taskHeight}px`,
-                              left: `${left}%`,
-                              width: `${width}%`,
-                            }}
-                          >
-                            <div className="font-semibold">{task.title}</div>
-                            <div className="text-[10px]">
-                              {timeFormat === "24H"
-                                ? `${format(
-                                    new Date(task.startTime),
-                                    "HH:mm"
-                                  )} - ${format(
-                                    new Date(task.endTime),
-                                    "HH:mm"
-                                  )}`
-                                : `${format(
-                                    new Date(task.startTime),
-                                    "h:mm a"
-                                  )} - ${format(
-                                    new Date(task.endTime),
-                                    "h:mm a"
-                                  )}`}
+                          <TaskDialog task={task} key={task.id}>
+                            <div
+                              key={task.id}
+                              className={cn(
+                                "absolute bg-blue-500 p-2 rounded-lg shadow-md text-[12px] line-clamp-1 truncate leading-[12px] cursor-pointer hover:z-[9999] hover:ring-2 ring-neutral-900 hover:!w-full transition",
+                                taskHeight === 16 &&
+                                  "flex flex-row items-center gap-x-2 leading-normal",
+                                task.priority === Priority.high &&
+                                  "bg-rose-500",
+                                task.priority === Priority.low && "bg-green-500"
+                              )}
+                              style={{
+                                top: `${startPosition}px`,
+                                height: `${taskHeight}px`,
+                                left: `${left}%`,
+                                width: `${width}%`,
+                              }}
+                            >
+                              <div className="font-semibold">{task.title}</div>
+                              <div className="text-[10px]">
+                                {timeFormat === "24H"
+                                  ? `${format(
+                                      new Date(task.startTime),
+                                      "HH:mm"
+                                    )} - ${format(
+                                      new Date(task.endTime),
+                                      "HH:mm"
+                                    )}`
+                                  : `${format(
+                                      new Date(task.startTime),
+                                      "h:mm a"
+                                    )} - ${format(
+                                      new Date(task.endTime),
+                                      "h:mm a"
+                                    )}`}
+                              </div>
                             </div>
-                          </div>
+                          </TaskDialog>
                         );
                       });
                     })}

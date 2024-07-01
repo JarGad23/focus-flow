@@ -83,7 +83,7 @@ export const calculateTaskPositionAndWidth = (
   const endPosition = endHour * 64 + (endMinute / 15) * 16;
   const taskHeight = endPosition - startPosition;
 
-  const overlap = 0.5; // 30% overlap
+  const overlap = 0.5;
   const width = 100 / groupSize + (groupSize - 1) * overlap;
   const left = taskIndex * (100 / groupSize - overlap);
 
