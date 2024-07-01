@@ -96,4 +96,6 @@ export const creationUpdateTaskEvent = async ({
       throw new Error("Unauthorized");
     }
   }
+
+  return type;
 };

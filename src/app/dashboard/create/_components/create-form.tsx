@@ -45,7 +45,8 @@ export const CreateForm = ({ type, date }: Props) => {
     onError: () => {
       toast.error("Failed to update task");
     },
-    onSuccess: (data) => {
+    onSuccess: (type) => {
+      toast.success(`${type} create successfully!`);
       router.push("/dashboard");
     },
   });
