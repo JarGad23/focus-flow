@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { LoadingUI } from "./loading-ui";
 import { ErrorUI } from "./error-ui";
 import { Event } from "@prisma/client";
+import { EventDialog } from "./event-dialog";
 
 export const MonthView = () => {
   const { month, year } = useSelectedDate();
@@ -103,89 +104,91 @@ export const MonthView = () => {
   }
 
   return (
-    <div
-      className="relative flex-grow cursor-grab"
-      ref={scrollContainerRef}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-      style={{
-        overflowX: "auto",
-        overflowY: "hidden",
-      }}
-    >
-      <div className="flex flex-col">
-        <div className="flex flex-nowrap">
-          {daysOfWeek.map((day, index) => (
-            <div
-              key={index}
-              className={cn(
-                "border p-4 flex-shrink-0 bg-neutral-100 w-[calc(100%/2)] md:w-[calc(100%/3)] lg:w-[calc(100%/5)] 2xl:w-[calc(100%/7)]",
-                index === 0 && "rounded-tl-md",
-                index === daysOfWeek.length - 1 && "rounded-tr-md"
+    <>
+      <EventDialog />
+      <div
+        className="relative flex-grow cursor-grab"
+        ref={scrollContainerRef}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        style={{
+          overflowX: "auto",
+          overflowY: "hidden",
+        }}
+      >
+        <div className="flex flex-col">
+          <div className="flex flex-nowrap">
+            {daysOfWeek.map((day, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "border p-4 flex-shrink-0 bg-neutral-100 w-[calc(100%/2)] md:w-[calc(100%/3)] lg:w-[calc(100%/5)] 2xl:w-[calc(100%/7)]",
+                  index === 0 && "rounded-tl-md",
+                  index === daysOfWeek.length - 1 && "rounded-tr-md"
+                )}
+              >
+                <div className="text-center font-bold">{day}</div>
+              </div>
+            ))}
+          </div>
+          {weeksArray.map((week, weekIndex) => (
+            <div key={weekIndex} className="flex flex-nowrap">
+              {week.map(
+                (
+                  { dayOfMonth, fullDate, isCurrentMonth, monthAbbreviation },
+                  dayIndex
+                ) => {
+                  const startOfDay = new Date(
+                    fullDate.getFullYear(),
+                    fullDate.getMonth(),
+                    fullDate.getDate()
+                  );
+                  const endOfDay = new Date(
+                    fullDate.getFullYear(),
+                    fullDate.getMonth(),
+                    fullDate.getDate() + 1
+                  );
+
+                  let dayEvents: Event[] = [];
+
+                  if (events) {
+                    events.map((event) => {
+                      if (event.day > startOfDay && event.day <= endOfDay) {
+                        dayEvents.push(event);
+                      }
+                    });
+                  }
+
+                  return (
+                    <div
+                      key={dayIndex}
+                      className={cn(
+                        "relative flex justify-center border p-[76px] flex-shrink-0 w-[calc(100%/2)] md:w-[calc(100%/3)] lg:w-[calc(100%/5)] 2xl:w-[calc(100%/7)]",
+                        isCurrentMonth ? "" : "bg-gray-200",
+                        weekIndex === weeksArray.length - 1 &&
+                          dayIndex === 0 &&
+                          "rounded-bl-md",
+                        weekIndex === weeksArray.length - 1 &&
+                          dayIndex === week.length - 1 &&
+                          "rounded-br-md"
+                      )}
+                    >
+                      <MonthDayCard
+                        dayOfMonth={dayOfMonth}
+                        monthAbbreviation={monthAbbreviation}
+                        isFirstDayOfMonth={isCurrentMonth && dayOfMonth === "1"}
+                        events={dayEvents}
+                      />
+                    </div>
+                  );
+                }
               )}
-            >
-              <div className="text-center font-bold">{day}</div>
             </div>
           ))}
         </div>
-        {weeksArray.map((week, weekIndex) => (
-          <div key={weekIndex} className="flex flex-nowrap">
-            {week.map(
-              (
-                { dayOfMonth, fullDate, isCurrentMonth, monthAbbreviation },
-                dayIndex
-              ) => {
-                const startOfDay = new Date(
-                  fullDate.getFullYear(),
-                  fullDate.getMonth(),
-                  fullDate.getDate()
-                );
-                const endOfDay = new Date(
-                  fullDate.getFullYear(),
-                  fullDate.getMonth(),
-                  fullDate.getDate() + 1
-                );
-
-                let dayEvents: Event[] = [];
-
-                if (events) {
-                  events.map((event) => {
-                    if (event.day > startOfDay && event.day <= endOfDay) {
-                      dayEvents.push(event);
-                    }
-                  });
-                }
-
-                return (
-                  <div
-                    key={dayIndex}
-                    className={cn(
-                      "relative flex justify-center border p-[76px] flex-shrink-0 w-[calc(100%/2)] md:w-[calc(100%/3)] lg:w-[calc(100%/5)] 2xl:w-[calc(100%/7)]",
-                      isCurrentMonth ? "" : "bg-gray-200",
-                      weekIndex === weeksArray.length - 1 &&
-                        dayIndex === 0 &&
-                        "rounded-bl-md",
-                      weekIndex === weeksArray.length - 1 &&
-                        dayIndex === week.length - 1 &&
-                        "rounded-br-md"
-                    )}
-                  >
-                    <MonthDayCard
-                      dayOfMonth={dayOfMonth}
-                      fullDate={fullDate}
-                      monthAbbreviation={monthAbbreviation}
-                      isFirstDayOfMonth={isCurrentMonth && dayOfMonth === "1"}
-                      events={dayEvents}
-                    />
-                  </div>
-                );
-              }
-            )}
-          </div>
-        ))}
       </div>
-    </div>
+    </>
   );
 };
