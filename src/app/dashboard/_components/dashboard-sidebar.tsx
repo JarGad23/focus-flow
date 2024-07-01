@@ -12,18 +12,38 @@ import { SidebarEvent } from "./sidebar-event";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Home } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export const DashboardSidebar = () => {
   const { isOpen } = useSidebar();
   const { day, week, month, year } = useSelectedDate();
-  const { timePeriod, timeFormat } = useTimePeriod();
+  const { timePeriod } = useTimePeriod();
+  const [isVisible, setIsVisible] = useState(isOpen);
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsVisible(true);
+    }
+  }, [isOpen]);
+
+  const handleAnimationEnd = () => {
+    if (!isOpen) {
+      setIsVisible(false);
+    }
+  };
 
   return (
     <div
       className={cn(
         "w-44 md:w-60 border-r border-gray-200 bg-neutral-50 flex flex-col items-center px-4 py-6 gap-y-4 shadow-lg",
-        !isOpen && "hidden"
+        {
+          "animate-in fade-in-0": isOpen,
+          "animate-out fade-out-0": !isOpen,
+        }
       )}
+      data-state={isOpen ? "open" : "closed"}
+      style={{ display: isVisible ? "flex" : "none" }}
+      onAnimationEnd={handleAnimationEnd}
     >
       <SidebarCalendar />
       <div className="p-2">
