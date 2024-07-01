@@ -19,8 +19,10 @@ import {
 } from "@/lib/utils";
 import { Priority } from "@prisma/client";
 import { TaskDialog } from "./task-dialog";
+import { useTaskDialog } from "@/store/use-task-dialog";
 
 export const WeekView = () => {
+  const { onOpen } = useTaskDialog();
   const { week } = useSelectedDate();
   const { timeFormat } = useTimePeriod();
   const [currentTimePosition, setCurrentTimePosition] = useState(0);
@@ -108,6 +110,7 @@ export const WeekView = () => {
 
   return (
     <div className="flex relative">
+      <TaskDialog />
       <div className="flex-none w-16 bg-gray-50 border-r mt-10">
         {hours.map((hour) => {
           const formattedHour =
@@ -177,44 +180,42 @@ export const WeekView = () => {
                           );
 
                         return (
-                          <TaskDialog task={task} key={task.id}>
-                            <div
-                              key={task.id}
-                              className={cn(
-                                "absolute bg-blue-500 p-2 rounded-lg shadow-md text-[12px] line-clamp-1 truncate leading-[12px] cursor-pointer hover:z-[9999] hover:ring-2 ring-neutral-900 hover:!w-full transition",
-                                taskHeight === 16 &&
-                                  "flex flex-row items-center gap-x-2 leading-normal",
-                                task.priority === Priority.high &&
-                                  "bg-rose-500",
-                                task.priority === Priority.low && "bg-green-500"
-                              )}
-                              style={{
-                                top: `${startPosition}px`,
-                                height: `${taskHeight}px`,
-                                left: `${left}%`,
-                                width: `${width}%`,
-                              }}
-                            >
-                              <div className="font-semibold">{task.title}</div>
-                              <div className="text-[10px]">
-                                {timeFormat === "24H"
-                                  ? `${format(
-                                      new Date(task.startTime),
-                                      "HH:mm"
-                                    )} - ${format(
-                                      new Date(task.endTime),
-                                      "HH:mm"
-                                    )}`
-                                  : `${format(
-                                      new Date(task.startTime),
-                                      "h:mm a"
-                                    )} - ${format(
-                                      new Date(task.endTime),
-                                      "h:mm a"
-                                    )}`}
-                              </div>
+                          <div
+                            key={task.id}
+                            className={cn(
+                              "absolute bg-blue-500 p-2 rounded-lg shadow-md text-[12px] line-clamp-1 truncate leading-[12px] cursor-pointer hover:z-[9999] hover:ring-2 ring-neutral-900 hover:!w-full transition",
+                              taskHeight === 16 &&
+                                "flex flex-row items-center gap-x-2 leading-normal",
+                              task.priority === Priority.high && "bg-rose-500",
+                              task.priority === Priority.low && "bg-green-500"
+                            )}
+                            style={{
+                              top: `${startPosition}px`,
+                              height: `${taskHeight}px`,
+                              left: `${left}%`,
+                              width: `${width}%`,
+                            }}
+                            onClick={() => onOpen(task)}
+                          >
+                            <div className="font-semibold">{task.title}</div>
+                            <div className="text-[10px]">
+                              {timeFormat === "24H"
+                                ? `${format(
+                                    new Date(task.startTime),
+                                    "HH:mm"
+                                  )} - ${format(
+                                    new Date(task.endTime),
+                                    "HH:mm"
+                                  )}`
+                                : `${format(
+                                    new Date(task.startTime),
+                                    "h:mm a"
+                                  )} - ${format(
+                                    new Date(task.endTime),
+                                    "h:mm a"
+                                  )}`}
                             </div>
-                          </TaskDialog>
+                          </div>
                         );
                       });
                     })}
