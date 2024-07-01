@@ -17,7 +17,7 @@ import {
   setMinutes,
   startOfDay,
 } from "date-fns";
-import { ElementRef, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm, useFormState } from "react-hook-form";
 import { TaskSchema } from "@/schemas/create-form-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,6 +33,7 @@ import { TaskAccordionContent } from "./task-accordion-content";
 import { toast } from "sonner";
 import { deleteTask } from "@/actions/delete-task";
 import { useDeleteModal } from "@/store/use-delete-modal";
+import { Checkbox } from "./ui/checkbox";
 
 type Props = {
   task: Task;
@@ -43,7 +44,6 @@ type TaskFormData = z.infer<typeof TaskSchema>;
 export const TaskAccordion = ({ task }: Props) => {
   const { timeFormat } = useTimePeriod();
   const { onOpen } = useDeleteModal();
-  const accordionTriggerRef = useRef<ElementRef<"button">>(null);
 
   const queryClient = useQueryClient();
 
@@ -152,12 +152,6 @@ export const TaskAccordion = ({ task }: Props) => {
   };
 
   const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-
-    if (isEditing) {
-      accordionTriggerRef.current?.click();
-    }
-
     setIsEditing((prev) => !prev);
   };
 
@@ -173,16 +167,34 @@ export const TaskAccordion = ({ task }: Props) => {
     onDelete(task.id);
   };
 
+  const onCheckedChange = () => {
+    update({
+      data: {
+        ...task,
+        description: task.description || undefined,
+        tagId: task.tagId || undefined,
+        status:
+          task.status === Status.completed
+            ? Status.incompleted
+            : Status.completed,
+      },
+      type: "task",
+      id: task.id,
+    });
+  };
+
   const isFormChangedAndValid =
     Object.keys(dirtyFields).length > 0 && form.formState.isValid;
 
   return (
     <Accordion type="multiple" className="bg-white mt-2">
       <AccordionItem value={task.title} className="px-4 rounded-md shadow-md">
-        <AccordionTrigger
-          ref={accordionTriggerRef}
-          className="flex justify-between items-center group"
-        >
+        <AccordionTrigger className="flex items-center gap-x-2 group">
+          <Checkbox
+            checked={task.status === "completed"}
+            onCheckedChange={onCheckedChange}
+            onClick={(e) => e.stopPropagation()}
+          />
           <div
             className={cn(
               "w-full text-left group-hover:underline",
@@ -192,7 +204,14 @@ export const TaskAccordion = ({ task }: Props) => {
           >
             {task.title}
           </div>
-          <div className="flex gap-x-2">
+        </AccordionTrigger>
+        <AccordionContent className="relative flex flex-col gap-y-2 pt-12 md:pt-0">
+          <div
+            className={cn(
+              "absolute top-0 md:right-0 flex md:flex-col lg:flex-row gap-y-1 gap-x-2",
+              isEditing && "md:flex-row"
+            )}
+          >
             <Button
               variant="destructive"
               className="ml-auto flex items-center gap-x-2"
@@ -206,19 +225,17 @@ export const TaskAccordion = ({ task }: Props) => {
             </Button>
             <Button
               variant="outline"
-              className="flex items-center gap-x-2 mr-2 group-hover:underline"
+              className="w-full flex items-center gap-x-2 mr-2 group-hover:underline"
               onClick={onClick}
             >
               Edit
               <Edit className="size-5" />
             </Button>
           </div>
-        </AccordionTrigger>
-        <AccordionContent className="flex flex-col gap-y-2">
           {isEditing ? (
             <FormProvider {...form}>
               <form
-                className="px-2 w-full space-y-4 max-w-6xl mx-auto"
+                className="px-2 pt-2 md:pt-6 w-full space-y-4 max-w-6xl mx-auto"
                 onSubmit={form.handleSubmit(onSubmit)}
               >
                 <FormTitleDescriptionFields type="task" disabled={isPending} />

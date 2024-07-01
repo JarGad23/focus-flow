@@ -36,9 +36,9 @@ const EventsPage = () => {
 
   return (
     <div className="w-full p-4 lg:p-8 max-w-7xl mx-auto mt-8 flex flex-col gap-y-4">
-      <div className="w-full flex justify-between">
+      <div className="w-full flex flex-col gap-y-2 md:flex-row justify-between">
         <div>
-          <h2 className="text-2xl font-semibold">
+          <h2 className="text-xl md:text-2xl font-semibold">
             Events for for{" "}
             <span className="text-primary">
               {format(new Date(year, month), "MMMM yyyy")}
@@ -76,13 +76,13 @@ const EventsPage = () => {
           ))}
         </ScrollArea>
       )}
-      <div className="w-1/2 bg-white shadow-lg rounded-lg p-4 flex flex-col gap-y-4">
+      <div className="w-full lg:w-1/2 bg-white shadow-lg rounded-lg p-4 flex flex-col gap-y-4">
         <h4 className="text-xl font-semibold">Month overview</h4>
-        <div className="flex flex-col gap-y-1">
+        <div className="flex flex-col gap-y-1 text-xs sm:text-base">
           {events.map((event, index) => (
             <div className="flex items-center justify-between">
               <p className="flex gap-x-1">
-                {index + 1}.<span className="font-semibold">{event.title}</span>
+                {index + 1}.<span className="truncate">{event.title}</span>
               </p>
               <div className="flex items-center gap-x-1 font-semibold">
                 {format(event.day, "dd MMMM yyyy")}

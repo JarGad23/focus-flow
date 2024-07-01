@@ -5,7 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion";
-import { ElementRef, useRef, useState } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { Edit, X } from "lucide-react";
 import { FormProvider, useForm, useFormState } from "react-hook-form";
@@ -20,6 +20,7 @@ import { EventAccordionContent } from "./event-accordion-content";
 import { FormAllDayCheckbox } from "./form-components/form-all-day-checkbox";
 import { useDeleteModal } from "@/store/use-delete-modal";
 import { deleteEvent } from "@/actions/delete-event";
+import { cn } from "@/lib/utils";
 
 type Props = {
   event: Event;
@@ -29,7 +30,6 @@ type EventFormData = z.infer<typeof EventSchema>;
 
 export const EventAccordion = ({ event }: Props) => {
   const { onOpen } = useDeleteModal();
-  const accordionTriggerRef = useRef<ElementRef<"button">>(null);
   const [isEditing, setIsEditing] = useState(false);
   const queryClient = useQueryClient();
 
@@ -78,12 +78,6 @@ export const EventAccordion = ({ event }: Props) => {
   const { dirtyFields } = useFormState({ control: form.control });
 
   const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-
-    if (isEditing) {
-      accordionTriggerRef.current?.click();
-    }
-
     setIsEditing((prev) => !prev);
   };
 
@@ -105,18 +99,21 @@ export const EventAccordion = ({ event }: Props) => {
   return (
     <Accordion type="multiple" className="bg-white mt-2">
       <AccordionItem value={event.title} className="px-4 rounded-md shadow-md">
-        <AccordionTrigger
-          ref={accordionTriggerRef}
-          className="flex items-center group"
-        >
+        <AccordionTrigger className="flex items-center group">
           <p className="w-full text-left group-hover:underline">
             {event.title}
           </p>
-
-          <div className="flex gap-x-2">
+        </AccordionTrigger>
+        <AccordionContent className="relative flex flex-col gap-y-2 pt-12 md:pt-0">
+          <div
+            className={cn(
+              "absolute top-0 md:right-0 flex md:flex-col lg:flex-row gap-y-1 gap-x-2",
+              isEditing && "md:flex-row"
+            )}
+          >
             <Button
               variant="destructive"
-              className="ml-auto flex items-center gap-x-2"
+              className="w-full ml-auto flex items-center gap-x-2"
               onClick={(e) => {
                 e.stopPropagation();
                 onOpen(event.id, onConfirm);
@@ -127,19 +124,17 @@ export const EventAccordion = ({ event }: Props) => {
             </Button>
             <Button
               variant="outline"
-              className="flex items-center gap-x-2 mr-2 group-hover:underline"
+              className="w-full flex items-center gap-x-2 mr-2 group-hover:underline"
               onClick={onClick}
             >
               Edit
               <Edit className="size-5" />
             </Button>
           </div>
-        </AccordionTrigger>
-        <AccordionContent className="flex flex-col gap-y-2">
           {isEditing ? (
             <FormProvider {...form}>
               <form
-                className="px-2 w-full space-y-4 max-w-6xl mx-auto"
+                className="px-2 pt-2 md:pt-6 w-full space-y-4 max-w-6xl mx-auto"
                 onSubmit={form.handleSubmit(onSubmit)}
               >
                 <FormTitleDescriptionFields type="event" disabled={isPending} />
