@@ -1,47 +1,64 @@
 "use client";
 
-import { Task } from "@prisma/client";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
-import { Button } from "./ui/button";
-import { Edit, X } from "lucide-react";
+import { useState } from "react";
+import { Dialog, DialogContent } from "./ui/dialog";
+import { TaskContent } from "./task-content";
+import { useTimePeriod } from "@/store/useTimePeriod";
+import { TaskDialogHeader } from "./task-dialog-header";
+import { ConfirmationModal } from "./confirmation-modal";
+import { useDeleteModal } from "@/store/use-delete-modal";
+import { TaskDialogForm } from "./task-dialog-form";
+import { useTaskDialog } from "@/store/use-task-dialog";
 
-type Props = {
-  task: Task;
-  children: React.ReactNode;
-};
+export const TaskDialog = () => {
+  const { isOpen, onClose, task } = useTaskDialog();
+  const { timeFormat } = useTimePeriod();
+  const { onConfirm } = useDeleteModal();
+  const [isEditing, setIsEditing] = useState(false);
 
-export const TaskDialog = ({ task, children }: Props) => {
+  const toggleEditing = () => {
+    setIsEditing((prev) => !prev);
+  };
+
+  const onDialogClose = () => {
+    onClose();
+    setIsEditing(false);
+  };
+
+  if (!task) return;
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-[90%] lg:max-w-5xl">
-        <DialogHeader className="flex flex-row items-center justify-between">
-          <DialogTitle>{task.title}</DialogTitle>
-          <div className="flex gap-x-2">
-            <Button
-              variant="destructive"
-              className="ml-auto flex items-center gap-x-2"
-              onClick={() => {}}
-            >
-              Delete
-              <X className="size-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="flex items-center gap-x-2 mr-2 group-hover:underline"
-              onClick={() => {}}
-            >
-              Edit
-              <Edit className="size-5" />
-            </Button>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-[90%] lg:max-w-5xl rounded-md">
+        <TaskDialogHeader
+          id={task.id}
+          day={task.day}
+          endTime={task.endTime}
+          startTime={task.startTime}
+          timeFormat={timeFormat}
+          title={task.title}
+          toggleEditing={toggleEditing}
+          onDialogClose={onDialogClose}
+        />
+        {isEditing ? (
+          <TaskDialogForm
+            timeFormat={timeFormat}
+            task={task}
+            onDialogClose={onDialogClose}
+          />
+        ) : (
+          <div className="space-y-2">
+            <TaskContent
+              description={task.description}
+              startTime={task.startTime}
+              endTime={task.endTime}
+              priority={task.priority}
+              status={task.status}
+              timeFormat={timeFormat}
+            />
           </div>
-        </DialogHeader>
+        )}
+        <ConfirmationModal type="task" onConfirm={onConfirm} />
       </DialogContent>
     </Dialog>
   );

@@ -29,7 +29,7 @@ import { FormPrioritySelector } from "./form-components/form-priority-selector";
 import { FormStatusSelector } from "./form-components/form-status-selector";
 import { creationUpdateTaskEvent } from "@/actions/creation-update-task-event";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { TaskAccordionContent } from "./task-accordion-content";
+import { TaskContent } from "./task-content";
 import { toast } from "sonner";
 import { deleteTask } from "@/actions/delete-task";
 import { useDeleteModal } from "@/store/use-delete-modal";
@@ -79,6 +79,7 @@ export const TaskAccordion = ({ task }: Props) => {
   const [startDateOptions, setStartDateOptions] = useState<string[]>([]);
   const [endDateOptions, setEndDateOptions] = useState<string[]>([]);
   const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(null);
+  const [isFormChangedAndValid, setIsFormChangedAndValid] = useState(false);
 
   const form = useForm<TaskFormData>({
     resolver: zodResolver(TaskSchema),
@@ -93,7 +94,17 @@ export const TaskAccordion = ({ task }: Props) => {
     },
   });
 
-  const { dirtyFields } = useFormState({ control: form.control });
+  const watchedFields: TaskFormData = form.watch();
+
+  useEffect(() => {
+    const isChanged = Object.keys(watchedFields).some(
+      (key) =>
+        watchedFields[key as keyof TaskFormData]?.toString() !==
+        task[key as keyof TaskFormData]?.toString()
+    );
+
+    setIsFormChangedAndValid(isChanged && form.formState.isValid);
+  }, [watchedFields, form.formState.isValid, task]);
 
   useEffect(() => {
     const startOfTheDay = startOfDay(task.day);
@@ -183,9 +194,6 @@ export const TaskAccordion = ({ task }: Props) => {
     });
   };
 
-  const isFormChangedAndValid =
-    Object.keys(dirtyFields).length > 0 && form.formState.isValid;
-
   return (
     <Accordion type="multiple" className="bg-white mt-2">
       <AccordionItem value={task.title} className="px-4 rounded-md shadow-md">
@@ -262,7 +270,7 @@ export const TaskAccordion = ({ task }: Props) => {
               </form>
             </FormProvider>
           ) : (
-            <TaskAccordionContent
+            <TaskContent
               description={task.description}
               endTime={task.endTime}
               startTime={task.startTime}

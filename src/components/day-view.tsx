@@ -15,8 +15,10 @@ import { ErrorUI } from "./error-ui";
 import { calculateTaskPosition, cn, getOverlappingTasks } from "@/lib/utils";
 import { Priority } from "@prisma/client";
 import { TaskDialog } from "./task-dialog";
+import { useTaskDialog } from "@/store/use-task-dialog";
 
 export const DayView = () => {
+  const { onOpen } = useTaskDialog();
   const { timeFormat } = useTimePeriod();
   const { day } = useSelectedDate();
   const [currentTimePosition, setCurrentTimePosition] = useState(0);
@@ -59,6 +61,7 @@ export const DayView = () => {
 
   return (
     <div className="flex">
+      <TaskDialog />
       <div className="flex flex-col">
         {hours.map((hour) => {
           const formattedHour =
@@ -90,35 +93,34 @@ export const DayView = () => {
             const { startPosition, taskHeight } = calculateTaskPosition(task);
 
             return (
-              <TaskDialog key={task.id} task={task}>
-                <div
-                  key={task.id}
-                  className={cn(
-                    "absolute bg-blue-500 p-2 rounded-lg shadow-md flex items-center gap-x-2 cursor-pointer hover:z-[9999] hover:ring-2 ring-neutral-900 hover:!w-full transition",
-                    task.priority === Priority.high && "bg-rose-500",
-                    task.priority === Priority.low && "bg-green-500"
-                  )}
-                  style={{
-                    top: `${startPosition}px`,
-                    left: `${taskIndex * taskWidth}%`,
-                    width: `${taskWidth}%`,
-                    height: `${taskHeight}px`,
-                  }}
-                >
-                  <div className="font-semibold">{task.title}</div>
-                  <div className="text-sm">
-                    {timeFormat === "24H"
-                      ? `${format(
-                          new Date(task.startTime),
-                          "HH:mm"
-                        )} - ${format(new Date(task.endTime), "HH:mm")}`
-                      : `${format(
-                          new Date(task.startTime),
-                          "h:mm a"
-                        )} - ${format(new Date(task.endTime), "h:mm a")}`}
-                  </div>
+              <div
+                key={task.id}
+                className={cn(
+                  "absolute bg-blue-500 p-2 rounded-lg shadow-md flex items-center gap-x-2 cursor-pointer hover:z-[9999] hover:ring-2 ring-neutral-900 hover:!w-full transition",
+                  task.priority === Priority.high && "bg-rose-500",
+                  task.priority === Priority.low && "bg-green-500"
+                )}
+                style={{
+                  top: `${startPosition}px`,
+                  left: `${taskIndex * taskWidth}%`,
+                  width: `${taskWidth}%`,
+                  height: `${taskHeight}px`,
+                }}
+                onClick={() => onOpen(task)}
+              >
+                <div className="font-semibold">{task.title}</div>
+                <div className="text-sm">
+                  {timeFormat === "24H"
+                    ? `${format(new Date(task.startTime), "HH:mm")} - ${format(
+                        new Date(task.endTime),
+                        "HH:mm"
+                      )}`
+                    : `${format(new Date(task.startTime), "h:mm a")} - ${format(
+                        new Date(task.endTime),
+                        "h:mm a"
+                      )}`}
                 </div>
-              </TaskDialog>
+              </div>
             );
           });
         })}
