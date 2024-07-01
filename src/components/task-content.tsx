@@ -12,7 +12,7 @@ type Props = {
   status: string;
 };
 
-export const TaskAccordionContent = ({
+export const TaskContent = ({
   description,
   endTime,
   startTime,
