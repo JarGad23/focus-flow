@@ -7,11 +7,7 @@ type Props = {
   isAllDay: boolean;
 };
 
-export const EventAccordionContent = ({
-  description,
-  fullDate,
-  isAllDay,
-}: Props) => {
+export const EventContent = ({ description, fullDate, isAllDay }: Props) => {
   return (
     <>
       {description ? (

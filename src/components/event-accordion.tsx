@@ -5,7 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Edit, X } from "lucide-react";
 import { FormProvider, useForm, useFormState } from "react-hook-form";
@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { creationUpdateTaskEvent } from "@/actions/creation-update-task-event";
 import { toast } from "sonner";
-import { EventAccordionContent } from "./event-accordion-content";
+import { EventContent } from "./event-content";
 import { FormAllDayCheckbox } from "./form-components/form-all-day-checkbox";
 import { useDeleteModal } from "@/store/use-delete-modal";
 import { deleteEvent } from "@/actions/delete-event";
@@ -31,6 +31,7 @@ type EventFormData = z.infer<typeof EventSchema>;
 export const EventAccordion = ({ event }: Props) => {
   const { onOpen } = useDeleteModal();
   const [isEditing, setIsEditing] = useState(false);
+  const [isFormChangedAndValid, setIsFormChangedAndValid] = useState(false);
   const queryClient = useQueryClient();
 
   const { mutate: update, isPending: pendingUpdate } = useMutation({
@@ -75,7 +76,17 @@ export const EventAccordion = ({ event }: Props) => {
     },
   });
 
-  const { dirtyFields } = useFormState({ control: form.control });
+  const watchedFields: EventFormData = form.watch();
+
+  useEffect(() => {
+    const isChanged = Object.keys(watchedFields).some(
+      (key) =>
+        watchedFields[key as keyof EventFormData]?.toString() !==
+        event[key as keyof EventFormData]?.toString()
+    );
+
+    setIsFormChangedAndValid(isChanged && form.formState.isValid);
+  }, [watchedFields, form.formState.isValid, event]);
 
   const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setIsEditing((prev) => !prev);
@@ -92,9 +103,6 @@ export const EventAccordion = ({ event }: Props) => {
   const onConfirm = () => {
     onDelete(event.id);
   };
-
-  const isFormChangedAndValid =
-    Object.keys(dirtyFields).length > 0 && form.formState.isValid;
 
   return (
     <Accordion type="multiple" className="bg-white mt-2">
@@ -151,7 +159,7 @@ export const EventAccordion = ({ event }: Props) => {
               </form>
             </FormProvider>
           ) : (
-            <EventAccordionContent
+            <EventContent
               description={event.description}
               fullDate={event.day}
               isAllDay={event.isAllDay}
