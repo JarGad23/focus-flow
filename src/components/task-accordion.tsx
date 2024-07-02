@@ -18,7 +18,7 @@ import {
   startOfDay,
 } from "date-fns";
 import { useEffect, useState } from "react";
-import { FormProvider, useForm, useFormState } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { TaskSchema } from "@/schemas/create-form-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -167,10 +167,12 @@ export const TaskAccordion = ({ task }: Props) => {
   };
 
   const onSubmit = (data: TaskFormData) => {
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     update({
       data,
       type: "task",
       id: task.id,
+      userTimeZone,
     });
   };
 
@@ -179,6 +181,7 @@ export const TaskAccordion = ({ task }: Props) => {
   };
 
   const onCheckedChange = () => {
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     update({
       data: {
         ...task,
@@ -191,6 +194,7 @@ export const TaskAccordion = ({ task }: Props) => {
       },
       type: "task",
       id: task.id,
+      userTimeZone,
     });
   };
 
@@ -225,7 +229,7 @@ export const TaskAccordion = ({ task }: Props) => {
               className="ml-auto flex items-center gap-x-2"
               onClick={(e) => {
                 e.stopPropagation();
-                onOpen(task.id, onConfirm);
+                onOpen(task.id, onConfirm, "task");
               }}
             >
               Delete

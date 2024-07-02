@@ -14,7 +14,6 @@ import { LoadingUI } from "./loading-ui";
 import { ErrorUI } from "./error-ui";
 import { calculateTaskPosition, cn, getOverlappingTasks } from "@/lib/utils";
 import { Priority } from "@prisma/client";
-import { TaskDialog } from "./task-dialog";
 import { useTaskDialog } from "@/store/use-task-dialog";
 
 export const DayView = () => {
@@ -61,7 +60,6 @@ export const DayView = () => {
 
   return (
     <div className="flex">
-      <TaskDialog />
       <div className="flex flex-col">
         {hours.map((hour) => {
           const formattedHour =

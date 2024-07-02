@@ -3,10 +3,8 @@ import { DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Edit, X } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteTask } from "@/actions/delete-task";
 import { toast } from "sonner";
 import { useDeleteModal } from "@/store/use-delete-modal";
-import { useSelectedDate } from "@/store/useSelectedDate";
 import { deleteEvent } from "@/actions/delete-event";
 
 type Props = {
@@ -61,7 +59,7 @@ export const EventDialogHeader = ({
         <Button
           variant="destructive"
           className="ml-auto flex items-center gap-x-2"
-          onClick={() => onOpen(id, onConfirm)}
+          onClick={() => onOpen(id, onConfirm, "event")}
         >
           Delete
           <X className="size-4" />

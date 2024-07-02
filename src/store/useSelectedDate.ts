@@ -13,8 +13,13 @@ type selectedDateStoreType = {
   onSelectYear: (year: number) => void;
 };
 
+const resetTime = (date: Date) => {
+  date.setHours(0, 0, 0, 0);
+  return date;
+};
+
 export const useSelectedDate = create<selectedDateStoreType>((set) => ({
-  day: new Date(),
+  day: resetTime(new Date()),
   week: [
     startOfWeek(new Date(), { weekStartsOn: 1 }),
     endOfWeek(new Date(), { weekStartsOn: 1 }),
@@ -22,7 +27,7 @@ export const useSelectedDate = create<selectedDateStoreType>((set) => ({
   month: getMonth(new Date()),
   year: getYear(new Date()),
   monthName: format(new Date(), "MMMM"),
-  onSelectDay: (day: Date) => set({ day }),
+  onSelectDay: (day: Date) => set({ day: resetTime(day) }),
   onSelectWeek: (date: Date) =>
     set({
       week: [
@@ -31,7 +36,7 @@ export const useSelectedDate = create<selectedDateStoreType>((set) => ({
       ],
     }),
   onSelectMonth: (month: number) => {
-    const newDate = new Date();
+    const newDate = resetTime(new Date());
     newDate.setMonth(month);
     set({
       month,

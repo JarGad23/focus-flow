@@ -24,7 +24,7 @@ import { FormPrioritySelector } from "@/components/form-components/form-priority
 import { FormStatusSelector } from "@/components/form-components/form-status-selector";
 import { FormTitleDescriptionFields } from "@/components/form-components/form-title-description-fields";
 import { FormAllDayCheckbox } from "@/components/form-components/form-all-day-checkbox";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { creationUpdateTaskEvent } from "@/actions/creation-update-task-event";
 
 type Props = {
@@ -37,6 +37,7 @@ type EventFormData = z.infer<typeof EventSchema>;
 export type FormDataType = TaskFormData | EventFormData;
 
 export const CreateForm = ({ type, date }: Props) => {
+  const queryClient = useQueryClient();
   const router = useRouter();
   const { timeFormat } = useTimePeriod();
   const { mutate: create, isPending } = useMutation({
@@ -47,6 +48,15 @@ export const CreateForm = ({ type, date }: Props) => {
     },
     onSuccess: (type) => {
       toast.success(`${type} create successfully!`);
+      if (type === "event") {
+        queryClient.invalidateQueries({
+          queryKey: ["get-upcoming-event"],
+        });
+      } else {
+        queryClient.invalidateQueries({
+          queryKey: ["get-upcoming-task"],
+        });
+      }
       router.push("/dashboard");
     },
   });
@@ -159,7 +169,9 @@ export const CreateForm = ({ type, date }: Props) => {
   };
 
   const onSubmit = (data: FormDataType) => {
-    if (type === "task" || type === "event") create({ data, type });
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (type === "task" || type === "event")
+      create({ data, type, userTimeZone });
   };
 
   return (

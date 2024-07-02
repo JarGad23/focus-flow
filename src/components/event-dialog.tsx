@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { Dialog, DialogContent } from "./ui/dialog";
-import { ConfirmationModal } from "./confirmation-modal";
-import { useDeleteModal } from "@/store/use-delete-modal";
 import { useEventDialog } from "@/store/use-event-dialog";
 import { EventDialogHeader } from "./event-dialog-header";
 import { EventDialogForm } from "./event-dialog-form";
@@ -11,7 +9,6 @@ import { EventContent } from "./event-content";
 
 export const EventDialog = () => {
   const { isOpen, onClose, event } = useEventDialog();
-  const { onConfirm } = useDeleteModal();
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEditing = () => {
@@ -48,7 +45,6 @@ export const EventDialog = () => {
             />
           </div>
         )}
-        <ConfirmationModal type="task" onConfirm={onConfirm} />
       </DialogContent>
     </Dialog>
   );

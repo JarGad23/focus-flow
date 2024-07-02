@@ -13,7 +13,20 @@ type Props = {
   setDate: Dispatch<SetStateAction<Date>>;
 };
 
+const resetTime = (date: Date) => {
+  date.setHours(0, 0, 0, 0);
+  return date;
+};
+
 export const CreateCalendar = ({ date, setDate }: Props) => {
+  const handleDateSelect = (selectedDate: Date) => {
+    if (selectedDate) {
+      setDate(resetTime(selectedDate));
+    }
+  };
+
+  console.log(date);
+
   return (
     <div className="flex justify-between lg:flex-col lg:justify-start lg:gap-y-8">
       <div className="flex flex-col gap-y-2">
@@ -37,7 +50,7 @@ export const CreateCalendar = ({ date, setDate }: Props) => {
                 ISOWeek
                 mode="single"
                 selected={date}
-                onSelect={setDate}
+                onSelect={handleDateSelect}
                 captionLayout="dropdown-buttons"
                 fromYear={1960}
                 toYear={2030}
@@ -64,7 +77,7 @@ export const CreateCalendar = ({ date, setDate }: Props) => {
           ISOWeek
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={handleDateSelect}
           captionLayout="dropdown-buttons"
           fromYear={1960}
           toYear={2030}

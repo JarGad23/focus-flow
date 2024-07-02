@@ -14,13 +14,8 @@ import { cn } from "@/lib/utils";
 import { useDeleteModal } from "@/store/use-delete-modal";
 import { buttonVariants } from "./ui/button";
 
-type Props = {
-  onConfirm: () => void;
-  type: "task" | "event";
-};
-
-export const ConfirmationModal = ({ onConfirm, type }: Props) => {
-  const { isOpen, onClose } = useDeleteModal();
+export const ConfirmationModal = () => {
+  const { isOpen, onConfirm, onClose, type } = useDeleteModal();
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>

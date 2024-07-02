@@ -18,7 +18,6 @@ import {
   getOverlappingTasks,
 } from "@/lib/utils";
 import { Priority } from "@prisma/client";
-import { TaskDialog } from "./task-dialog";
 import { useTaskDialog } from "@/store/use-task-dialog";
 
 export const WeekView = () => {
@@ -110,7 +109,6 @@ export const WeekView = () => {
 
   return (
     <div className="flex relative">
-      <TaskDialog />
       <div className="flex-none w-16 bg-gray-50 border-r mt-10">
         {hours.map((hour) => {
           const formattedHour =
