@@ -49,6 +49,9 @@ export const getUpcomingEvent = async () => {
       day: true,
       isAllDay: true,
     },
+    orderBy: {
+      day: "asc",
+    },
   });
 
   if (!upcomingEvent) {

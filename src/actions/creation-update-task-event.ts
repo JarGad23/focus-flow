@@ -5,10 +5,12 @@ import { db } from "@/db";
 import { EventSchema, TaskSchema } from "@/schemas/create-form-schema";
 import { FormDataType } from "@/app/dashboard/create/_components/create-form";
 import { validateUser } from "./validate-user";
+import { toZonedTime } from "date-fns-tz";
 
 type creationUpdateTaskEventProps = {
   data: FormDataType;
   type: "task" | "event";
+  userTimeZone: string;
   id?: string;
 };
 
@@ -40,11 +42,17 @@ const isUserOwner = async (
 export const creationUpdateTaskEvent = async ({
   data,
   type,
+  userTimeZone,
   id,
 }: creationUpdateTaskEventProps) => {
   const user = await validateUser();
 
   let validatedFields: TaskType | EventType;
+
+  const localDate = data.day;
+  const utcDate = toZonedTime(localDate, userTimeZone);
+
+  data.day = utcDate;
 
   if (type === "task") {
     const validationResult = TaskSchema.safeParse(data);
