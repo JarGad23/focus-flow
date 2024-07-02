@@ -8,7 +8,7 @@ import {
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Edit, X } from "lucide-react";
-import { FormProvider, useForm, useFormState } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { FormTitleDescriptionFields } from "./form-components/form-title-description-fields";
 import { EventSchema } from "@/schemas/create-form-schema";
 import { z } from "zod";
@@ -93,10 +93,12 @@ export const EventAccordion = ({ event }: Props) => {
   };
 
   const onSubmit = (data: EventFormData) => {
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     update({
       data,
       type: "event",
       id: event.id,
+      userTimeZone,
     });
   };
 
@@ -124,7 +126,7 @@ export const EventAccordion = ({ event }: Props) => {
               className="w-full ml-auto flex items-center gap-x-2"
               onClick={(e) => {
                 e.stopPropagation();
-                onOpen(event.id, onConfirm);
+                onOpen(event.id, onConfirm, "event");
               }}
             >
               Delete

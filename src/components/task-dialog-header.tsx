@@ -77,7 +77,7 @@ export const TaskDialogHeader = ({
         <Button
           variant="destructive"
           className="ml-auto flex items-center gap-x-2"
-          onClick={() => onOpen(id, onConfirm)}
+          onClick={() => onOpen(id, onConfirm, "task")}
         >
           Delete
           <X className="size-4" />

@@ -5,15 +5,12 @@ import { Dialog, DialogContent } from "./ui/dialog";
 import { TaskContent } from "./task-content";
 import { useTimePeriod } from "@/store/useTimePeriod";
 import { TaskDialogHeader } from "./task-dialog-header";
-import { ConfirmationModal } from "./confirmation-modal";
-import { useDeleteModal } from "@/store/use-delete-modal";
 import { TaskDialogForm } from "./task-dialog-form";
 import { useTaskDialog } from "@/store/use-task-dialog";
 
 export const TaskDialog = () => {
   const { isOpen, onClose, task } = useTaskDialog();
   const { timeFormat } = useTimePeriod();
-  const { onConfirm } = useDeleteModal();
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEditing = () => {
@@ -58,7 +55,6 @@ export const TaskDialog = () => {
             />
           </div>
         )}
-        <ConfirmationModal type="task" onConfirm={onConfirm} />
       </DialogContent>
     </Dialog>
   );

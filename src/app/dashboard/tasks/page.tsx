@@ -1,14 +1,12 @@
 "use client";
 
 import { getDayTasks } from "@/actions/get-day-tasks";
-import { ConfirmationModal } from "@/components/confirmation-modal";
 import { ErrorUI } from "@/components/error-ui";
 import { LoadingUI } from "@/components/loading-ui";
 import { TaskAccordion } from "@/components/task-accordion";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useDeleteModal } from "@/store/use-delete-modal";
 import { useSelectedDate } from "@/store/useSelectedDate";
 import { useTimePeriod } from "@/store/useTimePeriod";
 import { useQuery } from "@tanstack/react-query";
@@ -19,7 +17,6 @@ import Link from "next/link";
 const TasksPage = () => {
   const { timeFormat } = useTimePeriod();
   const { day } = useSelectedDate();
-  const { onConfirm } = useDeleteModal();
 
   const {
     data: tasks,
@@ -130,7 +127,6 @@ const TasksPage = () => {
           <Progress className="w-full" value={completedPercentage} />
         </div>
       </div>
-      <ConfirmationModal type="task" onConfirm={onConfirm} />
     </div>
   );
 };

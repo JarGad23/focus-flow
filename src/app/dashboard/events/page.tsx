@@ -1,13 +1,11 @@
 "use client";
 
 import { getMonthEvents } from "@/actions/get-month-events";
-import { ConfirmationModal } from "@/components/confirmation-modal";
 import { ErrorUI } from "@/components/error-ui";
 import { EventAccordion } from "@/components/event-accordion";
 import { LoadingUI } from "@/components/loading-ui";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useDeleteModal } from "@/store/use-delete-modal";
 import { useSelectedDate } from "@/store/useSelectedDate";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -15,7 +13,6 @@ import { Ghost, Plus } from "lucide-react";
 import Link from "next/link";
 
 const EventsPage = () => {
-  const { onConfirm } = useDeleteModal();
   const { month, year } = useSelectedDate();
   const {
     data: events,
@@ -91,7 +88,6 @@ const EventsPage = () => {
           ))}
         </div>
       </div>
-      <ConfirmationModal type="event" onConfirm={onConfirm} />
     </div>
   );
 };
