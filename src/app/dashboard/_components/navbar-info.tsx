@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { useSidebar } from "@/store/useSidebar";
 import { Button } from "@/components/ui/button";
 import { useSelectedDate } from "@/store/useSelectedDate";
+import Link from "next/link";
 
 export const NavbarInfo = () => {
   const { timePeriod } = useTimePeriod();
@@ -30,7 +31,9 @@ export const NavbarInfo = () => {
           <PanelLeftOpen className="h-5 w-5" />
         )}
       </Button>
-      <Logo />
+      <Link href="/" className="cursor-pointer">
+        <Logo />
+      </Link>
       <span className="lg:text-lg font-medium tracking-tight">
         {timePeriod === "DAY" ? (
           format(day, "dd MMM yyyy")

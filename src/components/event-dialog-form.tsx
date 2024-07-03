@@ -62,10 +62,12 @@ export const EventDialogForm = ({ event, onDialogClose }: Props) => {
   }, [watchedFields, form.formState.isValid, event]);
 
   const onSubmit = (data: EventFormData) => {
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     update({
       data,
       type: "event",
       id: event.id,
+      userTimeZone,
     });
   };
   return (

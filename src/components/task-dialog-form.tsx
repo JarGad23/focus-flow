@@ -141,10 +141,12 @@ export const TaskDialogForm = ({ task, timeFormat, onDialogClose }: Props) => {
   };
 
   const onSubmit = (data: TaskFormData) => {
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     update({
       data,
       type: "task",
       id: task.id,
+      userTimeZone,
     });
   };
 
