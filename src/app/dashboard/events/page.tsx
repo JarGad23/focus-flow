@@ -69,7 +69,7 @@ const EventsPage = () => {
       ) : (
         <ScrollArea className="relative w-full flex flex-col max-h-[500px] shadow-md">
           {events.map((event) => (
-            <EventAccordion event={event} />
+            <EventAccordion key={event.id} event={event} />
           ))}
         </ScrollArea>
       )}
@@ -77,7 +77,7 @@ const EventsPage = () => {
         <h4 className="text-xl font-semibold">Month overview</h4>
         <div className="flex flex-col gap-y-1 text-xs sm:text-base">
           {events.map((event, index) => (
-            <div className="flex items-center justify-between">
+            <div key={event.id} className="flex items-center justify-between">
               <p className="flex gap-x-1">
                 {index + 1}.<span className="truncate">{event.title}</span>
               </p>

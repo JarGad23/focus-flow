@@ -23,6 +23,7 @@ export const MonthDayCard = ({
       </span>
       {events.map((event) => (
         <div
+          key={event.id}
           className="w-full rounded-md p-1 bg-primary text-neutral-100 hover:ring-2 ring-neutral-900 transition"
           onClick={() => onOpen(event)}
         >

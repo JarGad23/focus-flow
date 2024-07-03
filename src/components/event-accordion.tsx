@@ -38,10 +38,10 @@ export const EventAccordion = ({ event }: Props) => {
     mutationKey: ["update-event"],
     mutationFn: creationUpdateTaskEvent,
     onError: () => {
-      toast.error("Failed to update task");
+      toast.error("Failed to update event");
     },
     onSuccess: () => {
-      toast.success("Task updated successfull");
+      toast.success("Event updated successfull");
       queryClient.invalidateQueries({
         queryKey: ["get-month-events", event.month, event.year],
       });
