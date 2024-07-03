@@ -19,7 +19,7 @@ const resetTime = (date: Date) => {
 };
 
 export const CreateCalendar = ({ date, setDate }: Props) => {
-  const handleDateSelect = (selectedDate: Date) => {
+  const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
       setDate(resetTime(selectedDate));
     }
@@ -45,7 +45,6 @@ export const CreateCalendar = ({ date, setDate }: Props) => {
               <CalendarIcon className="text-neutral-200" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="lg:hidden">
-              {/* Fix selecting todays date not working */}
               <Calendar
                 ISOWeek
                 mode="single"

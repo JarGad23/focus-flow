@@ -23,7 +23,9 @@ export const SidebarCalendar = () => {
     end: week[1],
   });
 
-  const handleDaySelect = (date: Date) => {
+  const handleDaySelect = (date: Date | undefined) => {
+    if (!date) return;
+
     if (timePeriod === "DAY") {
       onSelectDay(date);
     }
