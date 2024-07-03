@@ -55,7 +55,7 @@ export default function Home() {
             <div className="w-full xl:w-1/2 relative">
               <Image
                 alt="board"
-                src="/board.png"
+                src="/board.PNG"
                 width={700}
                 height={500}
                 quality={100}
@@ -153,7 +153,7 @@ export default function Home() {
             <div className="w-full lg:w-[60%] bg-neutral-100 rounded-lg p-4 shadow-lg">
               <Image
                 alt="creation task"
-                src="/task-creation.png"
+                src="/task-creation.PNG"
                 width={700}
                 height={400}
                 className="rounded-lg shadow-lg"
@@ -162,7 +162,7 @@ export default function Home() {
             <div className="w-full lg:w-[40%] bg-neutral-100 rounded-lg p-4 shadow-lg">
               <Image
                 alt="creation task"
-                src="/task-review.png"
+                src="/task-review.PNG"
                 width={700}
                 height={400}
                 className="rounded-lg shadow-lg"
