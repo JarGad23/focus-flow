@@ -29,7 +29,9 @@ export const SidebarCalendar = () => {
     }
   };
 
-  const handleWeekSelect = (days: Date[]) => {
+  const handleWeekSelect = (days: Date[] | undefined) => {
+    if (!days) return;
+
     const selectedDay = days[days.length - 1];
     onSelectWeek(selectedDay);
   };
